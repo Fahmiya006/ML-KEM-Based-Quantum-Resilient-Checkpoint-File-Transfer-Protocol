@@ -1,5 +1,3 @@
-Yep, for a group project, I’d keep the README clean and not overdo the technical details. This is more GitHub-friendly:
-
 ML-KEM-Based Quantum-Resilient Checkpoint File Transfer Protocol
 
 A quantum-resilient and fault-tolerant file transfer protocol designed for secure data transmission over simulated 6G networks.
