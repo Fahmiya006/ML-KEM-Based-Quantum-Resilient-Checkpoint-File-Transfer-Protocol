@@ -1,0 +1,86 @@
+<mxfile host="app.diagrams.net" version="24.0.0" type="device">
+  <diagram id="flow-1" name="Checkpoint Resume Flowchart">
+    <mxGraphModel dx="1100" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1150" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="t" value="Checkpoint-Based Resume Flow (with delay components)" style="text;html=1;align=center;fontSize=16;fontStyle=1;fontColor=#1F3864;" vertex="1" parent="1">
+          <mxGeometry x="130" y="20" width="590" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n1" value="START transfer session" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#1F3864;strokeColor=none;fontColor=#FFFFFF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="70" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" value="TCP connect (3-way handshake) &#8776; 1.5 RTT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBE9F7;strokeColor=#2166AC;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="145" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" value="ML-KEM-768 encapsulation&#10;pk 1184 B &#8594; ct 1088 B &#8776; 1-2 ms (RTT dominated)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBE9F7;strokeColor=#2166AC;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="220" width="240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" value="HKDF-SHA256 &#8594; AES-256-GCM key + checkpoint MAC key (&#181;s)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBE9F7;strokeColor=#2166AC;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="300" width="240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" value="Split file into sequenced chunks (64 KB)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBE9F7;strokeColor=#2166AC;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="380" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" value="Encrypt chunk i and send [seq | nonce | ct | tag]&#10;T_tx = size / bandwidth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBE9F7;strokeColor=#2166AC;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="455" width="240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="n7" value="Receiver verifies tag + hash, sends ACK (+1 RTT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBE9F7;strokeColor=#2166AC;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="535" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="n8" value="Write checkpoint {sid, i, offset, hash, HMAC}&#10;every N chunks &#8212; 1-10 ms fsync" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#C07D00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="610" width="240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" value="Link disrupted?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FDE3E3;strokeColor=#B2182B;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="690" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" value="More chunks remaining?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#E7E3FB;strokeColor=#4634A1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="810" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="n9" value="SHA-256 whole-file verification" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6F0DD;strokeColor=#1A7F37;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="930" width="240" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="n10" value="TRANSFER COMPLETE" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#12652B;strokeColor=none;fontColor=#FFFFFF;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="280" y="1005" width="240" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="p1" value="Pause; detect via RST / timeout&#10;2-5 s worst case" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDE3E3;strokeColor=#B2182B;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="690" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="Reconnect with exponential backoff&#10;1s &#8594; 2s &#8594; 4s ... + 1 RTT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDE3E3;strokeColor=#B2182B;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="570" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="RESUME {sid, last verified index}&#10;verify HMAC &#8212; no re-key, no re-send" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#C07D00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="600" y="455" width="220" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="f1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="n1" target="n2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="n2" target="n3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="n3" target="n4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="n4" target="n5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="n5" target="n6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="n6" target="n7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="n7" target="n8"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="n8" target="d1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f9" value="no" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="d1" target="d2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f10" value="yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#B2182B;fontSize=11;" edge="1" parent="1" source="d1" target="p1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f11" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#B2182B;" edge="1" parent="1" source="p1" target="p2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f12" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#B2182B;" edge="1" parent="1" source="p2" target="p3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f13" value="resume from index i* + 1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#C07D00;fontSize=11;" edge="1" parent="1" source="p3" target="n6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f14" value="yes &#8212; next chunk" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#4634A1;fontSize=11;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="d2" target="n6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="200" y="850" /><mxPoint x="200" y="480" /></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f15" value="no" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;fontSize=11;" edge="1" parent="1" source="d2" target="n9"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="f16" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" edge="1" parent="1" source="n9" target="n10"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="note2" value="Baseline (no checkpoint): T = detect + reconnect + FULL ML-KEM handshake + retransmit all verified chunks&#10;Proposed: T = detect + reconnect + 1 RTT resume + remaining chunks only" style="text;html=1;align=left;fontSize=11;fontColor=#555555;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="130" y="1080" width="620" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

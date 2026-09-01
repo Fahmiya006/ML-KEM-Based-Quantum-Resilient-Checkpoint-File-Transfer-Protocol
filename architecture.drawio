@@ -1,0 +1,90 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="arch-1" name="System Architecture">
+    <mxGraphModel dx="1204" dy="817" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="620" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=17;fontStyle=1;fontColor=#1F3864;" value="System Architecture: ML-KEM Quantum-Resilient Checkpoint File Transfer" vertex="1">
+          <mxGeometry height="30" width="740" x="180" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="sender" parent="1" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=13;fontStyle=1;fontColor=#1F5FA9;fillColor=#F2F7FD;strokeColor=#2166AC;" value="Sender Node (UE / MEC)" vertex="1">
+          <mxGeometry height="440" width="290" x="40" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBE9F7;strokeColor=#2166AC;fontSize=12;" value="File Loader &amp; Chunk Splitter" vertex="1">
+          <mxGeometry height="55" width="250" x="60" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBE9F7;strokeColor=#2166AC;fontSize=12;" value="ML-KEM-768 Encapsulation (FIPS 203)" vertex="1">
+          <mxGeometry height="55" width="250" x="60" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBE9F7;strokeColor=#2166AC;fontSize=12;" value="AES-256-GCM Encryption Engine&#xa;(nonce = sid || chunk index)" vertex="1">
+          <mxGeometry height="55" width="250" x="60" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#C07D00;fontSize=12;" value="Checkpoint Manager (sender state)" vertex="1">
+          <mxGeometry height="55" width="250" x="60" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="s5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBE9F7;strokeColor=#2166AC;fontSize=12;" value="Transport Sender + Performance Logger" vertex="1">
+          <mxGeometry height="55" width="250" x="60" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="chan" parent="1" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=13;fontStyle=1;fontColor=#1A7F37;fillColor=#F2FBF4;strokeColor=#1A7F37;" value="Simulated 6G Channel (tc / netem, ns-3)" vertex="1">
+          <mxGeometry height="320" width="280" x="400" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="c1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6F0DD;strokeColor=#1A7F37;fontSize=12;" value="Latency / Jitter Model" vertex="1">
+          <mxGeometry height="55" width="240" x="420" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6F0DD;strokeColor=#1A7F37;fontSize=12;" value="Disruption Injector&#xa;(THz blockage, handover)" vertex="1">
+          <mxGeometry height="55" width="240" x="420" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6F0DD;strokeColor=#1A7F37;fontSize=12;" value="Packet Loss &amp; Reordering Emulator" vertex="1">
+          <mxGeometry height="55" width="240" x="420" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="recv" parent="1" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=13;fontStyle=1;fontColor=#7B3FA0;fillColor=#FAF4FD;strokeColor=#7B3FA0;" value="Receiver Node (UE / MEC)" vertex="1">
+          <mxGeometry height="440" width="290" x="750" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECDDF7;strokeColor=#7B3FA0;fontSize=12;" value="Transport Receiver (chunk listener)" vertex="1">
+          <mxGeometry height="55" width="250" x="770" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECDDF7;strokeColor=#7B3FA0;fontSize=12;" value="ML-KEM-768 Decapsulation" vertex="1">
+          <mxGeometry height="55" width="250" x="770" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECDDF7;strokeColor=#7B3FA0;fontSize=12;" value="AES-256-GCM Decrypt&#xa;+ Tag / Hash Verification" vertex="1">
+          <mxGeometry height="55" width="250" x="770" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3D6;strokeColor=#C07D00;fontSize=12;" value="Checkpoint Manager (authority)&#xa;durable store + HMAC" vertex="1">
+          <mxGeometry height="55" width="250" x="770" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="r5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECDDF7;strokeColor=#7B3FA0;fontSize=12;" value="File Reassembly + Integrity Logger" vertex="1">
+          <mxGeometry height="55" width="250" x="770" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="s1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" target="c1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="185" y="100" />
+              <mxPoint x="540" y="100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="s5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" target="c3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="c1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" target="r1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="c3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#333333;" target="r3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="s4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;startArrow=classic;startFill=1;strokeColor=#C07D00;fontSize=11;fontColor=#7A5200;" target="r4" value="checkpoint metadata {sid, chunk index, hash, HMAC}">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="185" y="470" />
+              <mxPoint x="560" y="470" />
+              <mxPoint x="560" y="347.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="note" parent="1" style="text;html=1;align=center;fontSize=11;fontColor=#555555;fontStyle=2" value="Baseline arm and proposed arm share the same channel emulator and seeds, so all measured differences come from the protocol." vertex="1">
+          <mxGeometry height="20" width="740" x="180" y="540" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
