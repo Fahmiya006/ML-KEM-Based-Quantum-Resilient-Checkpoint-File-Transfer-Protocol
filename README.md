@@ -1,6 +1,6 @@
-ML-KEM-Based Quantum-Resilient Checkpoint File Transfer Protocol
+**ML-KEM-Based Quantum-Resilient Checkpoint File Transfer Protocol**
 
-A quantum-resilient and fault-tolerant file transfer protocol designed for secure data transmission over simulated 6G networks.
+A **quantum-resilient** and fault-tolerant **file transfer protocol** designed for secure data transmission over simulated **6G** networks.
 
 The project uses ML-KEM for post-quantum key establishment, AES-256 for secure encryption, and checkpoint-based recovery to resume interrupted file transfers efficiently without retransmitting completed data.
 
