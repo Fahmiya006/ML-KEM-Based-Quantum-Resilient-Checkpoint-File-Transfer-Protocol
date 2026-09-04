@@ -1,0 +1,172 @@
+[  1/168] baseline-tls      4MB d=0x0.0s  t=  0.73s  gp= 45.77Mbps  rtx=   0.04%  rec= 0.00s  ok
+[  2/168] baseline-tls      4MB d=0x0.0s  t=  0.72s  gp= 46.91Mbps  rtx=   0.04%  rec= 0.00s  ok
+[  3/168] baseline-tls      4MB d=0x0.0s  t=  0.73s  gp= 45.94Mbps  rtx=   0.04%  rec= 0.00s  ok
+[  4/168] pq-nockpt         4MB d=0x0.0s  t=  0.74s  gp= 45.58Mbps  rtx=   0.04%  rec= 0.00s  ok
+[  5/168] pq-nockpt         4MB d=0x0.0s  t=  0.74s  gp= 45.51Mbps  rtx=   0.04%  rec= 0.00s  ok
+[  6/168] pq-nockpt         4MB d=0x0.0s  t=  0.74s  gp= 45.15Mbps  rtx=   0.04%  rec= 0.00s  ok
+[  7/168] classical-ckpt    4MB d=0x0.0s  t=  0.72s  gp= 46.44Mbps  rtx=   0.04%  rec= 0.00s  ok
+[  8/168] classical-ckpt    4MB d=0x0.0s  t=  0.76s  gp= 44.29Mbps  rtx=   0.04%  rec= 0.00s  ok
+[  9/168] classical-ckpt    4MB d=0x0.0s  t=  0.74s  gp= 45.15Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 10/168] proposed          4MB d=0x0.0s  t=  0.74s  gp= 45.07Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 11/168] proposed          4MB d=0x0.0s  t=  0.74s  gp= 45.09Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 12/168] proposed          4MB d=0x0.0s  t=  0.75s  gp= 44.90Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 13/168] baseline-tls      4MB d=1x0.3s  t=  1.55s  gp= 21.70Mbps  rtx=  65.70%  rec= 0.42s  ok
+[ 14/168] baseline-tls      4MB d=1x0.3s  t=  1.52s  gp= 22.08Mbps  rtx=  65.70%  rec= 0.43s  ok
+[ 15/168] baseline-tls      4MB d=1x0.3s  t=  1.53s  gp= 21.89Mbps  rtx=  65.70%  rec= 0.43s  ok
+[ 16/168] pq-nockpt         4MB d=1x0.3s  t=  1.57s  gp= 21.36Mbps  rtx=  65.70%  rec= 0.44s  ok
+[ 17/168] pq-nockpt         4MB d=1x0.3s  t=  1.54s  gp= 21.78Mbps  rtx=  61.01%  rec= 0.43s  ok
+[ 18/168] pq-nockpt         4MB d=1x0.3s  t=  1.55s  gp= 21.67Mbps  rtx=  61.01%  rec= 0.43s  ok
+[ 19/168] classical-ckpt    4MB d=1x0.3s  t=  1.21s  gp= 27.73Mbps  rtx=  15.68%  rec= 0.42s  ok
+[ 20/168] classical-ckpt    4MB d=1x0.3s  t=  1.21s  gp= 27.78Mbps  rtx=  14.11%  rec= 0.42s  ok
+[ 21/168] classical-ckpt    4MB d=1x0.3s  t=  1.21s  gp= 27.67Mbps  rtx=  15.68%  rec= 0.42s  ok
+[ 22/168] proposed          4MB d=1x0.3s  t=  1.23s  gp= 27.28Mbps  rtx=  14.11%  rec= 0.44s  ok
+[ 23/168] proposed          4MB d=1x0.3s  t=  1.23s  gp= 27.30Mbps  rtx=  14.11%  rec= 0.44s  ok
+[ 24/168] proposed          4MB d=1x0.3s  t=  1.23s  gp= 27.32Mbps  rtx=  10.99%  rec= 0.43s  ok
+[ 25/168] baseline-tls      4MB d=1x1.0s  t=  2.16s  gp= 15.53Mbps  rtx=  65.70%  rec= 1.06s  ok
+[ 26/168] baseline-tls      4MB d=1x1.0s  t=  2.17s  gp= 15.48Mbps  rtx=  61.01%  rec= 1.06s  ok
+[ 27/168] baseline-tls      4MB d=1x1.0s  t=  2.20s  gp= 15.22Mbps  rtx=  65.70%  rec= 1.06s  ok
+[ 28/168] pq-nockpt         4MB d=1x1.0s  t=  2.19s  gp= 15.30Mbps  rtx=  64.14%  rec= 1.07s  ok
+[ 29/168] pq-nockpt         4MB d=1x1.0s  t=  2.18s  gp= 15.42Mbps  rtx=  61.01%  rec= 1.07s  ok
+[ 30/168] pq-nockpt         4MB d=1x1.0s  t=  2.17s  gp= 15.43Mbps  rtx=  61.01%  rec= 1.07s  ok
+[ 31/168] classical-ckpt    4MB d=1x1.0s  t=  1.83s  gp= 18.29Mbps  rtx=  15.68%  rec= 1.05s  ok
+[ 32/168] classical-ckpt    4MB d=1x1.0s  t=  1.84s  gp= 18.28Mbps  rtx=  15.68%  rec= 1.06s  ok
+[ 33/168] classical-ckpt    4MB d=1x1.0s  t=  1.85s  gp= 18.14Mbps  rtx=  15.68%  rec= 1.05s  ok
+[ 34/168] proposed          4MB d=1x1.0s  t=  1.86s  gp= 18.00Mbps  rtx=  10.99%  rec= 1.07s  ok
+[ 35/168] proposed          4MB d=1x1.0s  t=  1.86s  gp= 18.03Mbps  rtx=  10.99%  rec= 1.07s  ok
+[ 36/168] proposed          4MB d=1x1.0s  t=  1.87s  gp= 17.95Mbps  rtx=  10.99%  rec= 1.07s  ok
+[ 37/168] baseline-tls      4MB d=2x0.3s  t=  1.55s  gp= 21.71Mbps  rtx=  65.70%  rec= 0.43s  ok
+[ 38/168] baseline-tls      4MB d=2x0.3s  t=  1.53s  gp= 21.90Mbps  rtx=  65.70%  rec= 0.42s  ok
+[ 39/168] baseline-tls      4MB d=2x0.3s  t=  1.53s  gp= 21.89Mbps  rtx=  65.70%  rec= 0.43s  ok
+[ 40/168] pq-nockpt         4MB d=2x0.3s  t=  1.54s  gp= 21.79Mbps  rtx=  64.14%  rec= 0.43s  ok
+[ 41/168] pq-nockpt         4MB d=2x0.3s  t=  1.57s  gp= 21.38Mbps  rtx=  64.14%  rec= 0.43s  ok
+[ 42/168] pq-nockpt         4MB d=2x0.3s  t=  1.54s  gp= 21.83Mbps  rtx=  61.01%  rec= 0.43s  ok
+[ 43/168] classical-ckpt    4MB d=2x0.3s  t=  1.23s  gp= 27.18Mbps  rtx=  15.68%  rec= 0.42s  ok
+[ 44/168] classical-ckpt    4MB d=2x0.3s  t=  1.22s  gp= 27.45Mbps  rtx=  17.24%  rec= 0.42s  ok
+[ 45/168] classical-ckpt    4MB d=2x0.3s  t=  1.21s  gp= 27.69Mbps  rtx=  15.68%  rec= 0.42s  ok
+[ 46/168] proposed          4MB d=2x0.3s  t=  1.22s  gp= 27.51Mbps  rtx=  15.68%  rec= 0.44s  ok
+[ 47/168] proposed          4MB d=2x0.3s  t=  1.24s  gp= 27.14Mbps  rtx=  10.99%  rec= 0.44s  ok
+[ 48/168] proposed          4MB d=2x0.3s  t=  1.22s  gp= 27.59Mbps  rtx=  10.99%  rec= 0.43s  ok
+[ 49/168] baseline-tls      4MB d=2x1.0s  t=  2.17s  gp= 15.43Mbps  rtx=  65.70%  rec= 1.06s  ok
+[ 50/168] baseline-tls      4MB d=2x1.0s  t=  2.17s  gp= 15.48Mbps  rtx=  65.70%  rec= 1.06s  ok
+[ 51/168] baseline-tls      4MB d=2x1.0s  t=  2.18s  gp= 15.41Mbps  rtx=  65.70%  rec= 1.06s  ok
+[ 52/168] pq-nockpt         4MB d=2x1.0s  t=  2.17s  gp= 15.49Mbps  rtx=  61.01%  rec= 1.07s  ok
+[ 53/168] pq-nockpt         4MB d=2x1.0s  t=  2.16s  gp= 15.50Mbps  rtx=  61.01%  rec= 1.06s  ok
+[ 54/168] pq-nockpt         4MB d=2x1.0s  t=  2.17s  gp= 15.49Mbps  rtx=  61.01%  rec= 1.07s  ok
+[ 55/168] classical-ckpt    4MB d=2x1.0s  t=  1.84s  gp= 18.28Mbps  rtx=  15.68%  rec= 1.05s  ok
+[ 56/168] classical-ckpt    4MB d=2x1.0s  t=  1.84s  gp= 18.26Mbps  rtx=  15.68%  rec= 1.06s  ok
+[ 57/168] classical-ckpt    4MB d=2x1.0s  t=  1.85s  gp= 18.17Mbps  rtx=  15.68%  rec= 1.05s  ok
+[ 58/168] proposed          4MB d=2x1.0s  t=  1.87s  gp= 17.98Mbps  rtx=  14.11%  rec= 1.07s  ok
+[ 59/168] proposed          4MB d=2x1.0s  t=  1.89s  gp= 17.78Mbps  rtx=  10.99%  rec= 1.07s  ok
+[ 60/168] proposed          4MB d=2x1.0s  t=  1.86s  gp= 18.06Mbps  rtx=  10.99%  rec= 1.07s  ok
+[ 61/168] baseline-tls      4MB d=4x0.3s  t=  1.53s  gp= 21.89Mbps  rtx=  65.70%  rec= 0.43s  ok
+[ 62/168] baseline-tls      4MB d=4x0.3s  t=  1.53s  gp= 21.89Mbps  rtx=  65.70%  rec= 0.43s  ok
+[ 63/168] baseline-tls      4MB d=4x0.3s  t=  1.52s  gp= 22.08Mbps  rtx=  65.70%  rec= 0.42s  ok
+[ 64/168] pq-nockpt         4MB d=4x0.3s  t=  1.54s  gp= 21.74Mbps  rtx=  65.70%  rec= 0.43s  ok
+[ 65/168] pq-nockpt         4MB d=4x0.3s  t=  1.53s  gp= 21.90Mbps  rtx=  64.14%  rec= 0.43s  ok
+[ 66/168] pq-nockpt         4MB d=4x0.3s  t=  1.54s  gp= 21.85Mbps  rtx=  61.01%  rec= 0.43s  ok
+[ 67/168] classical-ckpt    4MB d=4x0.3s  t=  1.20s  gp= 27.95Mbps  rtx=  15.68%  rec= 0.42s  ok
+[ 68/168] classical-ckpt    4MB d=4x0.3s  t=  1.24s  gp= 27.14Mbps  rtx=  15.68%  rec= 0.42s  ok
+[ 69/168] classical-ckpt    4MB d=4x0.3s  t=  1.21s  gp= 27.69Mbps  rtx=  15.68%  rec= 0.42s  ok
+[ 70/168] proposed          4MB d=4x0.3s  t=  1.23s  gp= 27.39Mbps  rtx=  15.68%  rec= 0.43s  ok
+[ 71/168] proposed          4MB d=4x0.3s  t=  1.22s  gp= 27.47Mbps  rtx=  14.11%  rec= 0.44s  ok
+[ 72/168] proposed          4MB d=4x0.3s  t=  1.23s  gp= 27.37Mbps  rtx=  10.99%  rec= 0.43s  ok
+[ 73/168] baseline-tls      4MB d=4x1.0s  t=  2.17s  gp= 15.49Mbps  rtx=  65.70%  rec= 1.06s  ok
+[ 74/168] baseline-tls      4MB d=4x1.0s  t=  2.17s  gp= 15.49Mbps  rtx=  65.70%  rec= 1.06s  ok
+[ 75/168] baseline-tls      4MB d=4x1.0s  t=  2.18s  gp= 15.38Mbps  rtx=  65.70%  rec= 1.06s  ok
+[ 76/168] pq-nockpt         4MB d=4x1.0s  t=  2.17s  gp= 15.43Mbps  rtx=  64.14%  rec= 1.07s  ok
+[ 77/168] pq-nockpt         4MB d=4x1.0s  t=  2.18s  gp= 15.41Mbps  rtx=  61.01%  rec= 1.07s  ok
+[ 78/168] pq-nockpt         4MB d=4x1.0s  t=  2.18s  gp= 15.41Mbps  rtx=  61.01%  rec= 1.07s  ok
+[ 79/168] classical-ckpt    4MB d=4x1.0s  t=  1.86s  gp= 18.02Mbps  rtx=  15.68%  rec= 1.08s  ok
+[ 80/168] classical-ckpt    4MB d=4x1.0s  t=  1.84s  gp= 18.26Mbps  rtx=  15.68%  rec= 1.06s  ok
+[ 81/168] classical-ckpt    4MB d=4x1.0s  t=  1.84s  gp= 18.25Mbps  rtx=  15.68%  rec= 1.05s  ok
+[ 82/168] proposed          4MB d=4x1.0s  t=  1.87s  gp= 17.95Mbps  rtx=  14.11%  rec= 1.07s  ok
+[ 83/168] proposed          4MB d=4x1.0s  t=  1.88s  gp= 17.85Mbps  rtx=  14.11%  rec= 1.08s  ok
+[ 84/168] proposed          4MB d=4x1.0s  t=  1.88s  gp= 17.87Mbps  rtx=  10.99%  rec= 1.07s  ok
+[ 85/168] baseline-tls     16MB d=0x0.0s  t=  2.74s  gp= 48.90Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 86/168] baseline-tls     16MB d=0x0.0s  t=  2.70s  gp= 49.72Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 87/168] baseline-tls     16MB d=0x0.0s  t=  2.71s  gp= 49.55Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 88/168] pq-nockpt        16MB d=0x0.0s  t=  2.74s  gp= 48.99Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 89/168] pq-nockpt        16MB d=0x0.0s  t=  2.70s  gp= 49.72Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 90/168] pq-nockpt        16MB d=0x0.0s  t=  2.82s  gp= 47.53Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 91/168] classical-ckpt   16MB d=0x0.0s  t=  2.71s  gp= 49.52Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 92/168] classical-ckpt   16MB d=0x0.0s  t=  2.65s  gp= 50.65Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 93/168] classical-ckpt   16MB d=0x0.0s  t=  2.69s  gp= 49.89Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 94/168] proposed         16MB d=0x0.0s  t=  2.78s  gp= 48.36Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 95/168] proposed         16MB d=0x0.0s  t=  2.69s  gp= 49.97Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 96/168] proposed         16MB d=0x0.0s  t=  2.80s  gp= 47.88Mbps  rtx=   0.04%  rec= 0.00s  ok
+[ 97/168] baseline-tls     16MB d=1x0.3s  t=  3.49s  gp= 38.48Mbps  rtx=  15.29%  rec= 0.42s  ok
+[ 98/168] baseline-tls     16MB d=1x0.3s  t=  3.46s  gp= 38.83Mbps  rtx=  14.89%  rec= 0.42s  ok
+[ 99/168] baseline-tls     16MB d=1x0.3s  t=  3.46s  gp= 38.75Mbps  rtx=  15.29%  rec= 0.42s  ok
+[100/168] pq-nockpt        16MB d=1x0.3s  t=  3.52s  gp= 38.08Mbps  rtx=  14.11%  rec= 0.44s  ok
+[101/168] pq-nockpt        16MB d=1x0.3s  t=  3.49s  gp= 38.46Mbps  rtx=  14.11%  rec= 0.43s  ok
+[102/168] pq-nockpt        16MB d=1x0.3s  t=  3.50s  gp= 38.30Mbps  rtx=  14.11%  rec= 0.43s  ok
+[103/168] classical-ckpt   16MB d=1x0.3s  t=  3.15s  gp= 42.56Mbps  rtx=   2.78%  rec= 0.42s  ok
+[104/168] classical-ckpt   16MB d=1x0.3s  t=  3.15s  gp= 42.65Mbps  rtx=   2.78%  rec= 0.42s  ok
+[105/168] classical-ckpt   16MB d=1x0.3s  t=  3.13s  gp= 42.82Mbps  rtx=   2.78%  rec= 0.42s  ok
+[106/168] proposed         16MB d=1x0.3s  t=  3.24s  gp= 41.37Mbps  rtx=   3.56%  rec= 0.45s  ok
+[107/168] proposed         16MB d=1x0.3s  t=  3.23s  gp= 41.54Mbps  rtx=   4.73%  rec= 0.43s  ok
+[108/168] proposed         16MB d=1x0.3s  t=  3.18s  gp= 42.17Mbps  rtx=   4.73%  rec= 0.44s  ok
+[109/168] baseline-tls     16MB d=1x1.0s  t=  4.13s  gp= 32.51Mbps  rtx=  15.29%  rec= 1.06s  ok
+[110/168] baseline-tls     16MB d=1x1.0s  t=  4.07s  gp= 32.96Mbps  rtx=  14.89%  rec= 1.05s  ok
+[111/168] baseline-tls     16MB d=1x1.0s  t=  4.09s  gp= 32.81Mbps  rtx=  15.29%  rec= 1.06s  ok
+[112/168] pq-nockpt        16MB d=1x1.0s  t=  4.17s  gp= 32.22Mbps  rtx=  14.89%  rec= 1.07s  ok
+[113/168] pq-nockpt        16MB d=1x1.0s  t=  4.10s  gp= 32.76Mbps  rtx=  14.11%  rec= 1.07s  ok
+[114/168] pq-nockpt        16MB d=1x1.0s  t=  4.11s  gp= 32.63Mbps  rtx=  14.11%  rec= 1.07s  ok
+[115/168] classical-ckpt   16MB d=1x1.0s  t=  3.81s  gp= 35.27Mbps  rtx=   2.78%  rec= 1.05s  ok
+[116/168] classical-ckpt   16MB d=1x1.0s  t=  3.75s  gp= 35.80Mbps  rtx=   2.78%  rec= 1.05s  ok
+[117/168] classical-ckpt   16MB d=1x1.0s  t=  3.78s  gp= 35.49Mbps  rtx=   2.78%  rec= 1.06s  ok
+[118/168] proposed         16MB d=1x1.0s  t=  3.82s  gp= 35.18Mbps  rtx=   2.39%  rec= 1.07s  ok
+[119/168] proposed         16MB d=1x1.0s  t=  3.79s  gp= 35.45Mbps  rtx=   1.61%  rec= 1.07s  ok
+[120/168] proposed         16MB d=1x1.0s  t=  3.77s  gp= 35.56Mbps  rtx=   1.61%  rec= 1.07s  ok
+[121/168] baseline-tls     16MB d=2x0.3s  t=  5.25s  gp= 25.59Mbps  rtx=  58.66%  rec= 0.54s  ok
+[122/168] baseline-tls     16MB d=2x0.3s  t=  5.17s  gp= 25.98Mbps  rtx=  57.88%  rec= 0.54s  ok
+[123/168] baseline-tls     16MB d=2x0.3s  t=  5.18s  gp= 25.90Mbps  rtx=  59.45%  rec= 0.54s  ok
+[124/168] pq-nockpt        16MB d=2x0.3s  t=  5.23s  gp= 25.68Mbps  rtx=  57.10%  rec= 0.55s  ok
+[125/168] pq-nockpt        16MB d=2x0.3s  t=  5.22s  gp= 25.72Mbps  rtx=  57.49%  rec= 0.55s  ok
+[126/168] pq-nockpt        16MB d=2x0.3s  t=  5.23s  gp= 25.66Mbps  rtx=  57.49%  rec= 0.55s  ok
+[127/168] classical-ckpt   16MB d=2x0.3s  t=  3.85s  gp= 34.87Mbps  rtx=   5.91%  rec= 0.53s  ok
+[128/168] classical-ckpt   16MB d=2x0.3s  t=  3.82s  gp= 35.13Mbps  rtx=   6.69%  rec= 0.53s  ok
+[129/168] classical-ckpt   16MB d=2x0.3s  t=  3.83s  gp= 35.08Mbps  rtx=   6.69%  rec= 0.53s  ok
+[130/168] proposed         16MB d=2x0.3s  t=  3.83s  gp= 35.09Mbps  rtx=   5.12%  rec= 0.55s  ok
+[131/168] proposed         16MB d=2x0.3s  t=  3.86s  gp= 34.80Mbps  rtx=   5.12%  rec= 0.55s  ok
+[132/168] proposed         16MB d=2x0.3s  t=  3.92s  gp= 34.24Mbps  rtx=   8.64%  rec= 0.55s  ok
+[133/168] baseline-tls     16MB d=2x1.0s  t=  6.49s  gp= 20.68Mbps  rtx=  61.01%  rec= 1.14s  ok
+[134/168] baseline-tls     16MB d=2x1.0s  t=  6.48s  gp= 20.71Mbps  rtx=  60.62%  rec= 1.14s  ok
+[135/168] baseline-tls     16MB d=2x1.0s  t=  6.44s  gp= 20.85Mbps  rtx=  61.01%  rec= 1.14s  ok
+[136/168] pq-nockpt        16MB d=2x1.0s  t=  6.55s  gp= 20.48Mbps  rtx=  58.66%  rec= 1.15s  ok
+[137/168] pq-nockpt        16MB d=2x1.0s  t=  6.54s  gp= 20.52Mbps  rtx=  57.49%  rec= 1.17s  ok
+[138/168] pq-nockpt        16MB d=2x1.0s  t=  6.48s  gp= 20.70Mbps  rtx=  59.84%  rec= 1.15s  ok
+[139/168] classical-ckpt   16MB d=2x1.0s  t=  5.12s  gp= 26.22Mbps  rtx=   7.08%  rec= 1.13s  ok
+[140/168] classical-ckpt   16MB d=2x1.0s  t=  5.03s  gp= 26.66Mbps  rtx=   5.52%  rec= 1.13s  ok
+[141/168] classical-ckpt   16MB d=2x1.0s  t=  5.02s  gp= 26.72Mbps  rtx=   5.52%  rec= 1.14s  ok
+[142/168] proposed         16MB d=2x1.0s  t=  5.20s  gp= 25.83Mbps  rtx=   6.30%  rec= 1.15s  ok
+[143/168] proposed         16MB d=2x1.0s  t=  5.12s  gp= 26.23Mbps  rtx=   7.47%  rec= 1.15s  ok
+[144/168] proposed         16MB d=2x1.0s  t=  5.16s  gp= 26.02Mbps  rtx=   5.91%  rec= 1.15s  ok
+[145/168] baseline-tls     16MB d=4x0.3s  t=  7.99s  gp= 16.80Mbps  rtx= 134.87%  rec= 0.48s  ok
+[146/168] baseline-tls     16MB d=4x0.3s  t=  8.02s  gp= 16.73Mbps  rtx= 137.21%  rec= 0.48s  ok
+[147/168] baseline-tls     16MB d=4x0.3s  t=  7.97s  gp= 16.84Mbps  rtx= 138.78%  rec= 0.48s  ok
+[148/168] pq-nockpt        16MB d=4x0.3s  t=  8.02s  gp= 16.75Mbps  rtx= 134.48%  rec= 0.49s  ok
+[149/168] pq-nockpt        16MB d=4x0.3s  t=  7.99s  gp= 16.79Mbps  rtx= 135.65%  rec= 0.49s  ok
+[150/168] pq-nockpt        16MB d=4x0.3s  t=  8.00s  gp= 16.78Mbps  rtx= 136.43%  rec= 0.49s  ok
+[151/168] classical-ckpt   16MB d=4x0.3s  t=  4.35s  gp= 30.84Mbps  rtx=   8.25%  rec= 0.49s  ok
+[152/168] classical-ckpt   16MB d=4x0.3s  t=  4.30s  gp= 31.21Mbps  rtx=   8.25%  rec= 0.49s  ok
+[153/168] classical-ckpt   16MB d=4x0.3s  t=  4.30s  gp= 31.23Mbps  rtx=  10.99%  rec= 0.49s  ok
+[154/168] proposed         16MB d=4x0.3s  t=  4.39s  gp= 30.55Mbps  rtx=  10.20%  rec= 0.51s  ok
+[155/168] proposed         16MB d=4x0.3s  t=  4.42s  gp= 30.38Mbps  rtx=  10.99%  rec= 0.51s  ok
+[156/168] proposed         16MB d=4x0.3s  t=  4.37s  gp= 30.68Mbps  rtx=  10.60%  rec= 0.51s  ok
+[157/168] baseline-tls     16MB d=4x1.0s  t= 10.89s  gp= 12.33Mbps  rtx= 139.56%  rec= 1.18s  ok
+[158/168] baseline-tls     16MB d=4x1.0s  t= 10.90s  gp= 12.32Mbps  rtx= 140.73%  rec= 1.18s  ok
+[159/168] baseline-tls     16MB d=4x1.0s  t= 10.92s  gp= 12.29Mbps  rtx= 141.12%  rec= 1.18s  ok
+[160/168] pq-nockpt        16MB d=4x1.0s  t= 10.90s  gp= 12.31Mbps  rtx= 138.39%  rec= 1.19s  ok
+[161/168] pq-nockpt        16MB d=4x1.0s  t= 10.93s  gp= 12.28Mbps  rtx= 139.17%  rec= 1.19s  ok
+[162/168] pq-nockpt        16MB d=4x1.0s  t= 10.88s  gp= 12.33Mbps  rtx= 138.78%  rec= 1.19s  ok
+[163/168] classical-ckpt   16MB d=4x1.0s  t=  6.25s  gp= 21.47Mbps  rtx=   7.47%  rec= 1.16s  ok
+[164/168] classical-ckpt   16MB d=4x1.0s  t=  6.33s  gp= 21.20Mbps  rtx=  10.60%  rec= 1.16s  ok
+[165/168] classical-ckpt   16MB d=4x1.0s  t=  6.25s  gp= 21.48Mbps  rtx=   7.08%  rec= 1.16s  ok
+[166/168] proposed         16MB d=4x1.0s  t=  6.44s  gp= 20.85Mbps  rtx=  10.60%  rec= 1.18s  ok
+[167/168] proposed         16MB d=4x1.0s  t=  6.28s  gp= 21.36Mbps  rtx=   5.12%  rec= 1.18s  ok
+[168/168] proposed         16MB d=4x1.0s  t=  6.32s  gp= 21.25Mbps  rtx=   7.86%  rec= 1.18s  ok
+
+168 runs in 599.7s -> results/results.csv
+corrupted deliveries (BUG if >0): 0
+did not finish in budget (a result, not a bug): 0
