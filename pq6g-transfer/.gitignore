@@ -1,0 +1,8 @@
+__pycache__/
+venv/
+.work/
+received/
+rx_state/
+uploads/
+*.cap
+test.bin

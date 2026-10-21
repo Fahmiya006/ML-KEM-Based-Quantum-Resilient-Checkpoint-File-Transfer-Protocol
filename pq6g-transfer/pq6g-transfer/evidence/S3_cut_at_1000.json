@@ -1,0 +1,36 @@
+{
+ "id": "S3_cut_at_1000",
+ "size_mb": 100,
+ "link": "6g-demo",
+ "seed": 1,
+ "n": 64,
+ "mode": "checkpoint",
+ "sender_ok": true,
+ "file_identical": true,
+ "wall_s": 6.117,
+ "receiver_completion_s": 5.821,
+ "key_exchanges": 1,
+ "resumes": 1,
+ "rewinds": 0,
+ "chunks_sent": 1672,
+ "chunks_resent": 72,
+ "chunks_in_file": 1600,
+ "outages": 1,
+ "outage_seconds": 1.0,
+ "checkpoints": 24,
+ "t_ck_ms_mean": 8.022,
+ "t_ck_ms_median": 6.507,
+ "resume_served": [
+  {
+   "i_star": 959,
+   "o_star": 62914560,
+   "had_verified_until": 1000,
+   "redo_chunks": 41,
+   "t": 4.035863
+  }
+ ],
+ "resume_rejected": [],
+ "tag_rejects": 0,
+ "attacks": [],
+ "bytes_resent_mb": 4.5
+}

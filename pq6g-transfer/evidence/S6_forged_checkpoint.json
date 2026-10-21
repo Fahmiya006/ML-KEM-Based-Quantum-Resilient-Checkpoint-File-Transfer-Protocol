@@ -1,0 +1,43 @@
+{
+ "id": "S6_forged_checkpoint",
+ "size_mb": 30,
+ "link": "6g-demo",
+ "seed": 1,
+ "n": 32,
+ "mode": "checkpoint",
+ "sender_ok": true,
+ "file_identical": true,
+ "wall_s": 3.086,
+ "receiver_completion_s": 2.997,
+ "key_exchanges": 1,
+ "resumes": 0,
+ "rewinds": 1,
+ "chunks_sent": 712,
+ "chunks_resent": 232,
+ "chunks_in_file": 480,
+ "outages": 1,
+ "outage_seconds": 1.0,
+ "checkpoints": 20,
+ "t_ck_ms_mean": 4.562,
+ "t_ck_ms_median": 4.284,
+ "resume_served": [
+  {
+   "i_star": 191,
+   "o_star": 12582912,
+   "had_verified_until": 200,
+   "redo_chunks": 9,
+   "t": 1.730166
+  }
+ ],
+ "resume_rejected": [
+  {
+   "t": 1.731081,
+   "reason": "bad_hmac"
+  }
+ ],
+ "tag_rejects": 0,
+ "attacks": [
+  "attack_forge"
+ ],
+ "bytes_resent_mb": 14.5
+}

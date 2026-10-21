@@ -1,0 +1,125 @@
+{
+ "per_seed": [
+  {
+   "seed": 1,
+   "checkpoint": {
+    "sender_ok": true,
+    "file_identical": true,
+    "receiver_completion_s": 11.475,
+    "chunks_sent": 1886,
+    "chunks_resent": 286,
+    "outages": 7,
+    "resumes": 6
+   },
+   "restart": {
+    "sender_ok": false,
+    "file_identical": false,
+    "receiver_completion_s": null,
+    "chunks_sent": 8947,
+    "chunks_resent": 0,
+    "outages": 37,
+    "resumes": 0
+   }
+  },
+  {
+   "seed": 2,
+   "checkpoint": {
+    "sender_ok": true,
+    "file_identical": true,
+    "receiver_completion_s": 5.777,
+    "chunks_sent": 1654,
+    "chunks_resent": 54,
+    "outages": 1,
+    "resumes": 1
+   },
+   "restart": {
+    "sender_ok": false,
+    "file_identical": true,
+    "receiver_completion_s": 33.411,
+    "chunks_sent": 10199,
+    "chunks_resent": 0,
+    "outages": 33,
+    "resumes": 0
+   }
+  },
+  {
+   "seed": 3,
+   "checkpoint": {
+    "sender_ok": true,
+    "file_identical": true,
+    "receiver_completion_s": 15.74,
+    "chunks_sent": 1970,
+    "chunks_resent": 370,
+    "outages": 10,
+    "resumes": 8
+   },
+   "restart": {
+    "sender_ok": false,
+    "file_identical": true,
+    "receiver_completion_s": 19.743,
+    "chunks_sent": 10565,
+    "chunks_resent": 0,
+    "outages": 32,
+    "resumes": 0
+   }
+  },
+  {
+   "seed": 4,
+   "checkpoint": {
+    "sender_ok": true,
+    "file_identical": true,
+    "receiver_completion_s": 13.478,
+    "chunks_sent": 1901,
+    "chunks_resent": 301,
+    "outages": 8,
+    "resumes": 6
+   },
+   "restart": {
+    "sender_ok": false,
+    "file_identical": false,
+    "receiver_completion_s": null,
+    "chunks_sent": 9980,
+    "chunks_resent": 0,
+    "outages": 34,
+    "resumes": 0
+   }
+  },
+  {
+   "seed": 5,
+   "checkpoint": {
+    "sender_ok": true,
+    "file_identical": true,
+    "receiver_completion_s": 8.034,
+    "chunks_sent": 1755,
+    "chunks_resent": 155,
+    "outages": 3,
+    "resumes": 3
+   },
+   "restart": {
+    "sender_ok": false,
+    "file_identical": false,
+    "receiver_completion_s": null,
+    "chunks_sent": 10719,
+    "chunks_resent": 0,
+    "outages": 31,
+    "resumes": 1
+   }
+  }
+ ],
+ "summary": {
+  "checkpoint": {
+   "runs": 5,
+   "completed": 5,
+   "median_completion_s": 11.47,
+   "total_mb_sent": 572.9,
+   "total_mb_resent": 72.9
+  },
+  "restart": {
+   "runs": 5,
+   "completed": 2,
+   "median_completion_s": 26.58,
+   "total_mb_sent": 3150.6,
+   "total_mb_resent": 0.0
+  }
+ }
+}

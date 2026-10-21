@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phone receiver</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;500;700;800&family=Chivo+Mono:wght@400;500&display=swap">
+<style>
+  /* Same instrument-panel language as the laptop dashboard: ruled square panels, one status lamp, plain numbers. */
+  :root {
+    --paper:#E7E9E4; --panel:#F3F4F0; --ink:#1A1E22; --ink2:#4B535B; --ink3:#7C847F; --rule:#B9BDB6;
+    --pending:#C5C8C0; --recv:#1E7A5A; --blocked:#C47500; --down:#B3261E; --flight:#2C5BC9; --ckpt:#1B2A41;
+    --mono: "Chivo Mono", ui-monospace, Menlo, Consolas, monospace;
+    --sans: "Chivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper:#121518; --panel:#1A1E22; --ink:#E6E8E3; --ink2:#AEB4AE; --ink3:#7E857F; --rule:#363C40;
+            --pending:#3A4146; --recv:#4FC39A; --blocked:#E8A33A; --down:#FF7A70; --flight:#6C93F0; --ckpt:#9DB7E0; }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display:none !important; }
+  html, body { min-height:100%; }
+  body { margin:0; background: var(--paper); color: var(--ink); font: 15px/1.45 var(--sans);
+         padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  header { padding:16px 18px 12px; border-bottom:2px solid var(--ink); background: var(--panel); }
+  h1 { margin:0; font-size:22px; line-height:1.15; font-weight:800; letter-spacing:-0.02em; }
+  .sub { margin-top:4px; color: var(--ink2); font-size:13.5px; }
+  main { padding:6px 18px 28px; max-width:640px; margin:0 auto; }
+  section { margin-top:18px; }
+  h2 { margin:0 0 8px; padding-top:7px; border-top:2px solid var(--ink); font-size:13.5px; font-weight:800; }
+  .state { display:flex; align-items:center; gap:12px; }
+  .lamp { width:16px; height:16px; background: var(--ink3); flex:none; }
+  .lamp.recv { background: var(--flight); } .lamp.lost { background: var(--blocked); } .lamp.ok { background: var(--recv); } .lamp.bad { background: var(--down); }
+  #st { font-size:28px; font-weight:800; letter-spacing:-0.02em; line-height:1.1; }
+  #msg { margin:8px 0 0; color: var(--ink2); }
+  .bar { height:12px; background: var(--pending); margin:14px 0 4px; }
+  .bar i { display:block; height:100%; width:0; background: var(--recv); transition: width .15s linear; }
+  .row { display:flex; justify-content:space-between; color: var(--ink2); font-size:13px; font-family: var(--mono); }
+  table { width:100%; border-collapse:collapse; border-top:1px solid var(--rule); }
+  th, td { text-align:left; padding:6px 0; border-bottom:1px solid var(--rule); vertical-align:top; font-size:14px; }
+  th { color: var(--ink2); font-weight:400; width:42%; padding-right:10px; }
+  td { font-family: var(--mono); font-size:13px; overflow-wrap:anywhere; }
+  #save { display:inline-block; margin-top:14px; padding:12px 18px; background: var(--ink); color: var(--paper); font-weight:700; text-decoration:none; }
+  #note { margin:8px 0 0; font-size:12.5px; color: var(--ink3); }
+  #log { font-family: var(--mono); font-size:12px; border-top:1px solid var(--rule); }
+  #log div { display:flex; gap:10px; padding:4px 0; border-bottom:1px solid var(--rule); }
+  #log .t { color: var(--ink3); min-width:48px; text-align:right; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Secure Checkpoint/Resume File Transfer</h1>
+  <div class="sub">Phone receiver. ML-KEM-768 key exchange, AES-256-GCM, signed checkpoints.</div>
+</header>
+<main>
+  <section>
+    <h2>Status</h2>
+    <div class="state"><span class="lamp" id="lamp"></span><span id="st">Waiting for a file</span></div>
+    <p id="msg">This phone is the receiver. Start the transfer on the laptop.</p>
+    <div class="bar"><i id="b"></i></div>
+    <div class="row"><span id="pc">0%</span><span id="ch"></span></div>
+    <a id="save" href="/file" hidden>Save file to this phone</a>
+    <p id="note" hidden>The save button downloads the verified file from the laptop over Wi-Fi. That last step is an ordinary download, outside the simulated link.</p>
+  </section>
+  <section>
+    <h2>Details</h2>
+    <table>
+      <tr><th>File</th><td id="f-name">-</td></tr>
+      <tr><th>Size</th><td id="f-size">-</td></tr>
+      <tr><th>Key exchange</th><td id="f-kex">-</td></tr>
+      <tr><th>Last checkpoint</th><td id="f-ck">-</td></tr>
+      <tr><th>Signal losses</th><td id="f-lost">0</td></tr>
+      <tr><th>Resumes</th><td id="f-res">0</td></tr>
+      <tr><th>SHA-256</th><td id="f-sha">-</td></tr>
+    </table>
+  </section>
+  <section>
+    <h2>What happened</h2>
+    <div id="log"></div>
+  </section>
+</main>
+<script>
+var RUN = null, tot = 0, got = 0, lost = 0, res = 0, name = "", t0 = null, lines = [];
+function $(i) { return document.getElementById(i); }
+function status(cls, t, m) { $("lamp").className = "lamp " + cls; $("st").textContent = t; $("msg").textContent = m; }
+function pct() {
+  var p = tot ? Math.min(100, Math.round(100 * got / tot)) : 0;
+  $("b").style.width = p + "%"; $("pc").textContent = p + "%"; $("ch").textContent = tot ? got + " of " + tot + " chunks" : "";
+}
+function log(e, msg) {
+  if (t0 === null) t0 = e.t;
+  lines.push('<div><span class="t">' + Math.max(0, e.t - t0).toFixed(1) + 's</span><span>' + msg + '</span></div>');
+  if (lines.length > 12) lines.shift();
+  $("log").innerHTML = lines.join("");
+}
+function on(e) {
+  if (e.ev === "run_start") { if (RUN !== null && RUN !== e.run) { location.reload(); return; } RUN = e.run; return; }
+  if (e.src !== "receiver") return;
+  if (e.ev === "kex_done") { $("f-kex").textContent = e.kem + ", key " + e.key_fp; log(e, "Key exchange done. The secret key never crossed the air."); }
+  else if (e.ev === "meta") {
+    name = e.name; tot = e.nchunks; got = 0;
+    $("f-name").textContent = name; $("f-size").textContent = (e.size / 1048576).toFixed(2) + " MB, " + tot + " chunks";
+    status("recv", "Receiving", "Chunks are arriving, each one decrypted and checked.");
+    log(e, "Receiving " + name);
+  }
+  else if (e.ev === "chunk_ok") { got = e.i + 1; pct(); }
+  else if (e.ev === "checkpoint") { $("f-ck").textContent = "chunk " + e.i_star; }
+  else if (e.ev === "rx_link_lost") {
+    lost++; $("f-lost").textContent = lost;
+    status("lost", "Signal lost", "Waiting for the link. Everything up to the last checkpoint is saved.");
+    log(e, "Signal lost after chunk " + e.verified_until + ". Last checkpoint: " + (e.ckpt_i_star >= 0 ? "chunk " + e.ckpt_i_star : "none"));
+  }
+  else if (e.ev === "resume_served") {
+    res++; $("f-res").textContent = res; got = e.i_star + 1; pct();
+    status("recv", "Resumed", "Continuing from chunk " + (e.i_star + 1) + " with the same key. No new key exchange.");
+    log(e, "Resumed from checkpoint at chunk " + e.i_star + "; " + e.redo_chunks + " chunks sent again");
+  }
+  else if (e.ev === "file_verified") {
+    got = tot; pct();
+    $("f-sha").textContent = e.sha256;
+    status("ok", "File received", '"' + name + '" arrived and its SHA-256 matches the original.');
+    $("save").hidden = false; $("note").hidden = false;
+    log(e, "Whole file hashed, SHA-256 matches");
+  }
+}
+var es = new EventSource("/events");
+es.onmessage = function (m) { on(JSON.parse(m.data)); };
+</script>
+</body>
+</html>

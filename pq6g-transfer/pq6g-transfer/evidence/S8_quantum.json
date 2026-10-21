@@ -1,0 +1,10 @@
+{
+ "rsa-toy": {
+  "transfer_ok": true,
+  "attack_exit": 0
+ },
+ "mlkem768": {
+  "transfer_ok": true,
+  "attack_exit": 0
+ }
+}

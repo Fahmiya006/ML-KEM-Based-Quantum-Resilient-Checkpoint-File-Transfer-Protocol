@@ -1,0 +1,50 @@
+{
+ "id": "S3b_two_cuts",
+ "size_mb": 100,
+ "link": "6g-demo",
+ "seed": 1,
+ "n": 32,
+ "mode": "checkpoint",
+ "sender_ok": true,
+ "file_identical": true,
+ "wall_s": 8.388,
+ "receiver_completion_s": 8.014,
+ "key_exchanges": 1,
+ "resumes": 3,
+ "rewinds": 0,
+ "chunks_sent": 1736,
+ "chunks_resent": 136,
+ "chunks_in_file": 1600,
+ "outages": 3,
+ "outage_seconds": 3.0,
+ "checkpoints": 49,
+ "t_ck_ms_mean": 4.414,
+ "t_ck_ms_median": 4.213,
+ "resume_served": [
+  {
+   "i_star": 383,
+   "o_star": 25165824,
+   "had_verified_until": 400,
+   "redo_chunks": 17,
+   "t": 2.543058
+  },
+  {
+   "i_star": 895,
+   "o_star": 58720256,
+   "had_verified_until": 900,
+   "redo_chunks": 5,
+   "t": 5.00902
+  },
+  {
+   "i_star": 1279,
+   "o_star": 83886080,
+   "had_verified_until": 1300,
+   "redo_chunks": 21,
+   "t": 7.181092
+  }
+ ],
+ "resume_rejected": [],
+ "tag_rejects": 0,
+ "attacks": [],
+ "bytes_resent_mb": 8.5
+}

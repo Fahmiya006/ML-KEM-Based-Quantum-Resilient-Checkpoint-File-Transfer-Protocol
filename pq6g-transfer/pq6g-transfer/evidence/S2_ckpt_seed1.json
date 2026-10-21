@@ -1,0 +1,71 @@
+{
+ "id": "S2_ckpt_seed1",
+ "size_mb": 100,
+ "link": "6g-demo",
+ "seed": 1,
+ "n": 32,
+ "mode": "checkpoint",
+ "sender_ok": true,
+ "file_identical": true,
+ "wall_s": 12.626,
+ "receiver_completion_s": 11.475,
+ "key_exchanges": 1,
+ "resumes": 6,
+ "rewinds": 0,
+ "chunks_sent": 1886,
+ "chunks_resent": 286,
+ "chunks_in_file": 1600,
+ "outages": 7,
+ "outage_seconds": 7.02,
+ "checkpoints": 49,
+ "t_ck_ms_mean": 5.745,
+ "t_ck_ms_median": 4.168,
+ "resume_served": [
+  {
+   "i_star": 31,
+   "o_star": 2097152,
+   "had_verified_until": 46,
+   "redo_chunks": 15,
+   "t": 1.547921
+  },
+  {
+   "i_star": 575,
+   "o_star": 37748736,
+   "had_verified_until": 600,
+   "redo_chunks": 25,
+   "t": 4.150389
+  },
+  {
+   "i_star": 991,
+   "o_star": 65011712,
+   "had_verified_until": 999,
+   "redo_chunks": 8,
+   "t": 6.380593
+  },
+  {
+   "i_star": 1023,
+   "o_star": 67108864,
+   "had_verified_until": 1045,
+   "redo_chunks": 22,
+   "t": 7.632292
+  },
+  {
+   "i_star": 1183,
+   "o_star": 77594624,
+   "had_verified_until": 1203,
+   "redo_chunks": 20,
+   "t": 9.21316
+  },
+  {
+   "i_star": 1311,
+   "o_star": 85983232,
+   "had_verified_until": 1331,
+   "redo_chunks": 20,
+   "t": 10.712135
+  }
+ ],
+ "resume_rejected": [],
+ "tag_rejects": 0,
+ "attacks": [],
+ "bytes_resent_mb": 17.88
+}

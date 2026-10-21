@@ -1,0 +1,45 @@
+{
+ "id": "S7_replayed_checkpoint",
+ "size_mb": 30,
+ "link": "6g-demo",
+ "seed": 1,
+ "n": 32,
+ "mode": "checkpoint",
+ "sender_ok": true,
+ "file_identical": true,
+ "wall_s": 4.229,
+ "receiver_completion_s": 4.142,
+ "key_exchanges": 1,
+ "resumes": 2,
+ "rewinds": 0,
+ "chunks_sent": 738,
+ "chunks_resent": 258,
+ "chunks_in_file": 480,
+ "outages": 2,
+ "outage_seconds": 2.0,
+ "checkpoints": 14,
+ "t_ck_ms_mean": 4.481,
+ "t_ck_ms_median": 4.468,
+ "resume_served": [
+  {
+   "i_star": 127,
+   "o_star": 8388608,
+   "had_verified_until": 150,
+   "redo_chunks": 23,
+   "t": 1.596583
+  },
+  {
+   "i_star": 287,
+   "o_star": 18874368,
+   "had_verified_until": 300,
+   "redo_chunks": 13,
+   "t": 3.161652
+  }
+ ],
+ "resume_rejected": [],
+ "tag_rejects": 0,
+ "attacks": [
+  "attack_replay"
+ ],
+ "bytes_resent_mb": 16.12
+}

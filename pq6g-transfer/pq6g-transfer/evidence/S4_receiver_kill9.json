@@ -1,0 +1,30 @@
+{
+ "id": "S4_receiver_kill9",
+ "receiver_killed_after_checkpoints": 4,
+ "sender_exit": 0,
+ "file_identical": true,
+ "sender_output": [
+  "DONE: file delivered and verified | chunks sent 995 (resent 35), key exchanges 1, resumes 1",
+  "  link: 0 outages, 0.0s lost"
+ ],
+ "restored": [
+  {
+   "t": 0.003035,
+   "ts": 1792484175.742043,
+   "src": "receiver",
+   "ev": "rx_session_restored",
+   "sid": "15a4b247",
+   "name": "src_60.bin",
+   "ckpt_i_star": 127
+  }
+ ],
+ "resume_served": [
+  {
+   "i_star": 127,
+   "o_star": 8388608,
+   "redo_chunks": 0
+  }
+ ],
+ "reconnect_attempts": 10,
+ "key_exchanges_total": 1
+}

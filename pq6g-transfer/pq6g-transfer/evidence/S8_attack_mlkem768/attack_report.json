@@ -1,0 +1,18 @@
+{
+  "capture": "S8_mlkem768.cap",
+  "frames": 647,
+  "bytes": 20986816,
+  "sessions": 1,
+  "steps": [],
+  "success": false,
+  "kem": "mlkem768",
+  "pk_bytes": 1184,
+  "ct_bytes": 1088,
+  "chunks_recorded": 320,
+  "wire_entropy_bits_per_byte": 7.997577876547236,
+  "guesses": 144500,
+  "guess_rate": 48111.03442899848,
+  "years_for_2_256": 7.640532747829555e+64,
+  "hits": 0,
+  "wrong_key_authenticates": false
+}

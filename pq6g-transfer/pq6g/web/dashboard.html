@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secure Checkpoint/Resume File Transfer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;500;700;800&family=Chivo+Mono:wght@400;500&display=swap">
+<style>
+  /* Instrument-panel layout: three columns that fill the window, square panels ruled like a printed form. */
+  :root {
+    --paper:#E7E9E4; --panel:#F3F4F0; --ink:#1A1E22; --ink2:#4B535B; --ink3:#7C847F; --rule:#B9BDB6; --strong:#1A1E22;
+    --pending:#C5C8C0; --flight:#2C5BC9; --recv:#1E7A5A; --ckpt:#1B2A41; --redo:#E4570F;
+    --up:#1E7A5A; --blocked:#C47500; --down:#B3261E; --attack:#B3261E;
+    --mono: "Chivo Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: "Chivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper:#121518; --panel:#1A1E22; --ink:#E6E8E3; --ink2:#AEB4AE; --ink3:#7E857F; --rule:#363C40; --strong:#E6E8E3;
+            --pending:#3A4146; --flight:#6C93F0; --recv:#4FC39A; --ckpt:#9DB7E0; --redo:#FF8A4C;
+            --up:#4FC39A; --blocked:#E8A33A; --down:#FF7A70; --attack:#FF7A70; }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body { margin:0; font: 14px/1.45 var(--sans); color: var(--ink); background: var(--paper); }
+  #app { height: 100%; display:flex; flex-direction:column; min-width:0; }
+
+  /* top bar */
+  #top { display:flex; flex-wrap:wrap; align-items:flex-end; gap:8px 28px; padding:14px 20px 12px; border-bottom:2px solid var(--strong); background: var(--panel); }
+  .brand { min-width:0; flex:1 1 420px; }
+  h1 { font-size: clamp(22px, 2.6vw, 32px); line-height:1.1; margin:0; font-weight:800; letter-spacing:-0.02em; }
+  .tag { color: var(--ink2); font-size:13.5px; margin-top:4px; }
+  .topright { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  #fileinfo { font-family: var(--mono); font-size:13px; color: var(--ink2); max-width:34ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pill { display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:14px; color: var(--ink); min-width:11ch; }
+  .pill::before { content:""; width:11px; height:11px; background: var(--ink3); display:inline-block; }
+  .pill.up::before { background: var(--up); } .pill.blocked::before { background: var(--blocked); }
+  .pill.down::before { background: var(--down); } .pill.done::before { background: var(--ckpt); }
+
+  /* three columns */
+  #cols { flex:1; min-height:0; display:grid; grid-template-columns: minmax(290px, 24%) minmax(0, 1fr) minmax(300px, 26%); }
+  .col { min-height:0; min-width:0; overflow-y:auto; padding:14px 18px 18px; display:flex; flex-direction:column; gap:18px; }
+  .col + .col { border-left:1px solid var(--rule); }
+  .panel { min-width:0; }
+  .panel > h2 { font-size:13.5px; font-weight:800; margin:0 0 8px; padding-top:7px; border-top:2px solid var(--strong); display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
+  .panel > h2 .aside { font-weight:400; color: var(--ink3); font-size:12.5px; }
+  .grow { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
+
+  canvas { display:block; width:100%; }
+  #beam { height:120px; }
+  #beamNote { font-size:13.5px; min-height:20px; margin-top:2px; color: var(--ink2); }
+  .legend { display:flex; flex-wrap:wrap; gap:4px 16px; font-size:12.5px; color: var(--ink2); margin-top:8px; }
+  .legend i { display:inline-block; width:10px; height:10px; margin-right:6px; vertical-align:-1px; }
+  .bar { height:10px; background: var(--pending); margin: 6px 0 4px; }
+  .bar > div { height:100%; background: var(--recv); width:0; transition: width .12s linear; }
+  .tiny { font-size:12.5px; color: var(--ink3); }
+
+  /* counters as a ruled table */
+  .stats { display:grid; grid-template-columns: 1fr; border-top:1px solid var(--rule); }
+  .stat { display:flex; justify-content:space-between; align-items:baseline; padding:5px 0; border-bottom:1px solid var(--rule); }
+  .stat span { color: var(--ink2); font-size:13px; }
+  .stat b { font-family: var(--mono); font-weight:500; font-size:16px; font-variant-numeric: tabular-nums; }
+
+  dl { margin:0; display:grid; grid-template-columns: auto 1fr; gap:3px 14px; font-size:12.5px; }
+  dt { color: var(--ink3); } dd { margin:0; font-family: var(--mono); font-size:12px; overflow-wrap:anywhere; }
+
+  #log { font-family: var(--mono); font-size:12px; flex:1; min-height:140px; overflow:auto; border-top:1px solid var(--rule); }
+  #log div { padding:3px 0; border-bottom:1px solid var(--rule); display:flex; gap:10px; }
+  #log .t { color: var(--ink3); min-width:54px; text-align:right; font-variant-numeric: tabular-nums; }
+  #log .ok .m{color:var(--ink)} #log .warn .m{color:var(--blocked)} #log .bad .m{color:var(--down)} #log .atk .m{color:var(--attack); font-weight:600}
+  #log .key .m{color:var(--ckpt); font-weight:600}
+
+  /* buttons */
+  button { font: inherit; font-size:13.5px; font-weight:500; padding:7px 14px; border-radius:0; border:1px solid var(--strong); background: transparent; color: var(--ink); cursor:pointer; }
+  button:hover { background: var(--ink); color: var(--paper); }
+  button:focus-visible, input:focus-visible { outline:2px solid var(--flight); outline-offset:2px; }
+  button.danger { border-color: var(--down); color: var(--down); }
+  button.danger:hover { background: var(--down); color:#fff; }
+  button.primary { background: var(--ink); color: var(--paper); font-weight:700; padding:10px 18px; width:100%; text-align:left; }
+  button.primary:hover { background: var(--flight); border-color: var(--flight); color:#fff; }
+  button.primary.danger { background: var(--down); border-color: var(--down); color:#fff; }
+  .ctl { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  input[type=range] { flex:1; min-width:160px; }
+  #replayCtl { padding:8px 20px; border-bottom:1px solid var(--rule); }
+
+  /* presenter: a real sequence, so it is numbered */
+  #gsteps { list-style:none; margin:0 0 10px; padding:0; counter-reset: s; border-top:1px solid var(--rule); }
+  #gsteps li { counter-increment: s; display:flex; gap:10px; padding:5px 0; border-bottom:1px solid var(--rule); color: var(--ink3); font-size:13.5px; }
+  #gsteps li::before { content: counter(s); font-family: var(--mono); width:1.4em; text-align:right; }
+  #gsteps li.done { color: var(--ink2); }
+  #gsteps li.done::after { content:"done"; margin-left:auto; font-size:12px; color: var(--up); font-weight:700; }
+  #gsteps li.cur { color: var(--ink); font-weight:800; background: color-mix(in srgb, var(--flight) 12%, transparent); }
+  #gtext { font-size:14px; line-height:1.5; margin:0 0 10px; }
+  #guide .ctl { flex-direction:column; align-items:stretch; }
+  #gall { text-align:left; }
+
+  /* tabs on the centre column */
+  .tabs { display:flex; gap:0; border-bottom:1px solid var(--strong); margin-bottom:10px; }
+  .tab { border:1px solid transparent; border-bottom:0; padding:7px 16px; font-weight:700; background:transparent; color: var(--ink2); }
+  .tab:hover { background: transparent; color: var(--ink); }
+  .tab[aria-selected="true"] { border-color: var(--strong); background: var(--paper); color: var(--ink); margin-bottom:-1px; }
+  #pane-time { flex:1; min-height:240px; position:relative; display:flex; flex-direction:column; }
+  #chart { flex:1; min-height:220px; width:100%; }
+  #pane-q { flex:1; min-height:0; overflow:auto; }
+  .qjob { border-top:1px solid var(--rule); padding:12px 0 6px; }
+  .qjob:first-child { border-top:0; padding-top:0; }
+  .qjob h3 { font-size:14px; margin:0 0 8px; font-weight:800; }
+  .qrow { display:grid; grid-template-columns: minmax(180px, 420px) 1fr; gap:16px; }
+  .qrow > * { min-width:0; }
+  .qrow canvas { width:100%; max-width:420px; aspect-ratio: 420/150; border:1px solid var(--rule); }
+  .qlog { font-family: var(--mono); font-size:12px; line-height:1.45; max-height:230px; overflow:auto; white-space:pre-wrap; }
+  .qres { margin-top:10px; padding:8px 12px; font-weight:700; font-size:14px; border-left:5px solid; }
+  .qres.bad { border-color: var(--down); background: color-mix(in srgb, var(--down) 12%, transparent); }
+  .qres.good { border-color: var(--up); background: color-mix(in srgb, var(--up) 12%, transparent); }
+  .qimg { max-width:100%; max-height:300px; border:1px solid var(--rule); margin-top:8px; display:block; }
+  #qempty { color: var(--ink3); }
+
+  /* file chooser */
+  #picker { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; padding:24px; }
+  #pickbox { width:min(760px, 100%); display:flex; flex-direction:column; gap:18px; }
+  #pickbox h2 { font-size: clamp(22px, 2.4vw, 30px); margin:0; font-weight:800; letter-spacing:-0.01em; }
+  #drop { border:2px dashed var(--strong); padding: clamp(28px, 8vh, 80px) 24px; text-align:center; background: var(--panel); }
+  #drop.over { background: color-mix(in srgb, var(--flight) 14%, var(--panel)); border-color: var(--flight); }
+  #drop p { margin:0 0 14px; color: var(--ink2); }
+  #pickrow { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  #pickmsg { min-height:20px; color: var(--ink2); }
+  #tip { position:fixed; pointer-events:none; background: var(--ink); color: var(--paper); font-size:12.5px; padding:4px 8px; display:none; z-index:5; white-space:nowrap; }
+
+  @media (max-width: 1000px) {
+    html, body, #app { height:auto; }
+    #cols { display:block; }
+    .col { overflow:visible; border-left:0 !important; border-top:1px solid var(--rule); }
+    #chart { height:260px; flex:none; }
+    .qrow { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { .bar > div { transition: none; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="top">
+    <div class="brand">
+      <h1>Secure Checkpoint/Resume File Transfer</h1>
+      <div class="tag">ML-KEM-768 key exchange, AES-256-GCM encryption, signed checkpoints, over a simulated 6G link</div>
+    </div>
+    <div class="topright">
+      <span id="fileinfo"></span>
+      <button id="btnNew" hidden>Send another file</button>
+      <span class="pill" id="pill">idle</span>
+    </div>
+  </header>
+
+  <div class="ctl" id="replayCtl" hidden>
+    <button id="play">Play</button>
+    <button id="speed">1×</button>
+    <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Replay position">
+    <span class="tiny" id="clock">0.0 s</span>
+  </div>
+
+  <section id="picker" hidden>
+    <div id="pickbox">
+      <h2>Choose the file to send</h2>
+      <div id="drop">
+        <p>Drop a file here, or pick one from this computer. It is handed to the sender on the laptop and travels through the simulated 6G link to the receiver.</p>
+        <div id="pickrow">
+          <button class="primary" id="btnPick" style="width:auto">Choose a file…</button>
+          <button id="btnSample">Use a 20 MB sample file</button>
+        </div>
+        <input type="file" id="fileInput" hidden>
+      </div>
+      <div id="pickmsg" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <main id="cols">
+    <div class="col" id="colL">
+      <div class="panel" id="guide" hidden>
+        <h2>Presenter</h2>
+        <ol id="gsteps"></ol>
+        <p id="gtext" aria-live="polite"></p>
+        <div class="ctl">
+          <button class="primary" id="gnext">Next</button>
+          <button id="gall">Run everything at once</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Counters</h2>
+        <div class="stats" id="stats"></div>
+      </div>
+    </div>
+
+    <div class="col" id="colC">
+      <div class="panel">
+        <h2>The link <span class="aside" id="subtitle">waiting for the transfer to start</span></h2>
+        <div class="ctl" id="liveCtl" hidden style="margin-bottom:8px">
+          <button class="danger" id="btnCut">Block the beam now</button>
+          <button id="btnTamper">Flip a bit in the next chunk</button>
+          <span class="tiny">A hand or wall in the way, or an attacker on the air.</span>
+        </div>
+        <canvas id="beam" role="img" aria-label="Animated view of chunks travelling from sender to receiver"></canvas>
+        <div id="beamNote"></div>
+        <div class="bar"><div id="prog"></div></div>
+        <div class="tiny" id="progTxt"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Every chunk of the file</h2>
+        <canvas id="grid" role="img" aria-label="One square per chunk, coloured by state"></canvas>
+        <div class="legend" id="legend"></div>
+      </div>
+
+      <div class="panel grow">
+        <div class="tabs" role="tablist">
+          <button class="tab" id="tab-time" role="tab" aria-selected="true">Progress and throughput</button>
+          <button class="tab" id="tab-q" role="tab" aria-selected="false">Quantum attacker (simulated)</button>
+        </div>
+        <div id="pane-time">
+          <canvas id="chart" role="img" aria-label="Verified progress and link throughput over time, with outages shaded"></canvas>
+          <div class="legend" id="legend2"></div>
+        </div>
+        <div id="pane-q" hidden>
+          <div id="qempty" class="tiny">Appears after the transfer finishes, when you press the quantum attack button in the Presenter.</div>
+          <div id="qjobs"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col" id="colR">
+      <div class="panel"><h2>Key exchange</h2><dl id="kex"><dt>waiting</dt><dd>-</dd></dl></div>
+      <div class="panel"><h2>Last chunk on the wire</h2><dl id="wire"><dt>waiting</dt><dd>-</dd></dl></div>
+      <div class="panel"><h2>Last checkpoint</h2><dl id="ckpt"><dt>none yet</dt><dd>-</dd></dl></div>
+      <div class="panel grow"><h2>What happened</h2><div id="log"></div></div>
+    </div>
+  </main>
+</div>
+<div id="tip"></div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const REPLAY = Array.isArray(window.__EVENTS__);
+const HIDE_IN_LOG = new Set(["chunk_sent","chunk_ok","ack","link_tp","chunk_dup","link_conn_open","kex_hello"]);
+
+// ---------------------------------------------------------------- state
+let S;
+function fresh() {
+  return {
+    nchunks: 0, size: 0, n: 0, name: "", kem: "", mode: "", profile: null,
+    cs: null,                       // chunk states: 0 pending, 1 in flight, 2 received, 3 checkpointed, 4 invalidated (redo)
+    ck: -1, progress: 0, link: "UP", linkNote: "", done: false, failed: false,
+    outages: 0, ckpts: 0, resumes: 0, handshakes: 0, resent: 0, redo: 0, lost: 0, tagRejects: 0, rewinds: 0,
+    bytes: 0, tEnd: 0, t0: null,
+    series: [], tp: [], bands: [], ckMarks: [], resMarks: [], attMarks: [],
+    openBand: null, packets: [], beamClock: 0, log: [], lastSent: null,
+    kex: {}, wire: null, lastOk: null, sawSender: false, lastCkpt: null, lastT: 0
+  };
+}
+S = fresh();
+
+function setChunk(i, v) { if (S.cs && i >= 0 && i < S.cs.length) S.cs[i] = v; }
+
+function logLine(t, kind, msg) {
+  S.log.push({ t, kind, msg });
+  if (S.log.length > 400) S.log.shift();
+}
+const hx = (s, n) => (s || "").slice(0, n);
+
+function apply(e) {
+  S.lastT = e.t;
+  switch (e.ev) {
+    case "send_start":
+      S.sawSender = true;
+      S.nchunks = e.nchunks; S.size = e.size; S.n = e.n; S.name = e.file; S.kem = e.kem; S.mode = e.mode;
+      S.cs = new Uint8Array(e.nchunks);
+      logLine(e.t, "ok", `sending ${e.file} (${(e.size/1048576).toFixed(1)} MiB) as ${e.nchunks} chunks; checkpoint every ${e.n}`);
+      break;
+    case "meta":
+      S.handshakes++;
+      if (!S.cs) { S.nchunks = e.nchunks; S.size = e.size; S.n = e.n; S.name = e.name; S.cs = new Uint8Array(e.nchunks); }
+      break;
+    case "link_start": S.profile = e; break;
+    case "kex_done":
+      S.kem = S.kem || e.kem;
+      S.kex = Object.assign(S.kex, { kem: e.kem, impl: e.impl || S.kex.impl, pk: e.pk_bytes || S.kex.pk, ct: e.ct_bytes,
+        key_fp: e.key_fp, sid: e.sid, enc: e.t_encaps_ms != null ? e.t_encaps_ms : S.kex.enc,
+        dec: e.t_decaps_ms != null ? e.t_decaps_ms : S.kex.dec });
+      if (e.t_encaps_ms != null || (e.t_decaps_ms != null && !S.sawSender)) {
+        logLine(e.t, "key", `key agreed with ${e.kem}: public key ${e.pk_bytes || 1184} B and ciphertext ${e.ct_bytes} B crossed the link, the key itself never did (fingerprint ${e.key_fp})`);
+      }
+      break;
+    case "chunk_sent":
+      S.bytes += e.n;
+      if (e.resend) S.resent++;
+      if (S.cs && S.cs[e.i] < 2) setChunk(e.i, 1);
+      if (S.cs && S.cs[e.i] === 4) setChunk(e.i, 1);
+      S.packets.push({ born: S.beamClock, resend: !!e.resend });
+      if (S.packets.length > 60) S.packets.shift();
+      S.lastSent = e;
+      S.wire = e;
+      break;
+    case "chunk_ok":
+      setChunk(e.i, 2); S.lastOk = e;
+      S.progress = e.i + 1;
+      S.series.push([e.t, S.progress]);
+      break;
+    case "checkpoint": {
+      for (let j = Math.max(0, S.ck + 1); j <= e.i_star; j++) if (S.cs && S.cs[j] === 2) setChunk(j, 3);
+      S.ck = Math.max(S.ck, e.i_star); S.ckpts++;
+      S.lastCkpt = e; S.ckMarks.push([e.t, e.i_star + 1]);
+      break; }
+    case "resume_served": {
+      let redo = 0;
+      for (let j = e.i_star + 1; j <= e.had_verified_until; j++) { if (S.cs && S.cs[j] >= 2) { setChunk(j, 4); redo++; } }
+      S.ck = e.i_star; S.progress = e.i_star + 1; S.redo += redo; S.resumes++;
+      S.series.push([e.t, S.progress]); S.resMarks.push([e.t, S.progress]);
+      logLine(e.t, "key", `RESUME: receiver's signed bookmark says chunk ${e.i_star} (${(e.o_star/1048576).toFixed(1)} MiB) is safe on disk; ${redo} verified chunk(s) after it must be sent again`);
+      break; }
+    case "resume_accepted":
+      logLine(e.t, "ok", `sender checked the bookmark: signature ok, hash chain matches its own copy. Continues from chunk ${e.resume_from} with the SAME key (no new key exchange)`);
+      break;
+    case "resume_rejected":
+      S.rewinds++; S.resumes += 0;
+      logLine(e.t, "bad", `sender REJECTED the bookmark (${e.reason}) and restarts from chunk 0 instead of trusting it`);
+      break;
+    case "rewind":
+      S.ck = -1; S.progress = 0; S.series.push([e.t, 0]);
+      if (S.cs) for (let j = 0; j < S.cs.length; j++) if (S.cs[j] >= 2) S.cs[j] = 4;
+      break;
+    case "tag_reject":
+      S.tagRejects++; setChunk(e.i, 4);
+      logLine(e.t, "bad", `receiver rejected chunk ${e.i}: authentication tag does not match, so it was changed in flight`);
+      break;
+    case "link_blockage":
+      S.link = "BLOCKED"; S.outages++;
+      S.openBand = { t0: e.t, t1: null };
+      S.bands.push(S.openBand);
+      logLine(e.t, "warn", `link blocked (${e.reason}). For ${e.t_detect}s nothing gets through but the endpoints do not know yet`);
+      break;
+    case "link_down":
+      S.link = "DOWN";
+      logLine(e.t, "bad", `endpoints notice: connection reset. Link stays down for the reconnection delay`);
+      break;
+    case "link_up":
+      S.link = "UP";
+      if (S.openBand) { S.openBand.t1 = e.t; S.openBand = null; }
+      logLine(e.t, "ok", `link is back after ${e.outage_s}s`);
+      break;
+    case "link_tp": S.tp.push([e.t, e.up + e.down]); break;
+    case "tx_disconnect":
+      logLine(e.t, "warn", `sender lost the connection with chunks up to ${e.acked} acknowledged`);
+      break;
+    case "tx_reconnect_attempt": break;
+    case "rx_link_lost":
+      logLine(e.t, "warn", `receiver: link lost. It had verified up to chunk ${e.verified_until}; last saved bookmark is chunk ${e.ckpt_i_star}`);
+      break;
+    case "attack_tamper": case "attack_forge": case "attack_replay": case "attack_drop":
+      S.attMarks.push([e.t]); logLine(e.t, "atk", `ATTACKER: ${e.what}`);
+      break;
+    case "chunk_dup": break;
+    case "file_verified":
+      S.done = true; S.tEnd = e.t;
+      logLine(e.t, "key", `whole-file SHA-256 matches (${hx(e.sha256, 16)}…). The file is complete and identical`);
+      break;
+    case "resume_after_complete": case "resume_found_complete":
+      logLine(e.t, "ok", e.note); break;
+    case "send_complete":
+      S.done = true; if (!S.tEnd) S.tEnd = e.t; break;
+    case "send_failed":
+      S.failed = true; logLine(e.t, "bad", `sender gave up: ${e.reason}`); break;
+    case "tx_restart_session":
+      logLine(e.t, "bad", `no checkpoint: starting over with a brand-new key exchange from chunk 0`);
+      if (S.cs) for (let j = 0; j < S.cs.length; j++) if (S.cs[j] !== 0) S.cs[j] = 4;
+      S.progress = 0; S.series.push([e.t, 0]); S.ck = -1;
+      break;
+    case "rx_session_restored":
+      logLine(e.t, "key", `receiver restarted and reloaded its session; bookmark on disk = chunk ${e.ckpt_i_star}`);
+      break;
+    case "rx_listen": logLine(e.t, "ok", `receiver listening on port ${e.port}`); break;
+  }
+}
+
+// -------------------------------------------------------------- feed
+let BASE = null;           // time zero = the moment the transfer started (not when the page was opened)
+function norm(e) {
+  if (BASE === null && (e.ev === "send_start" || e.ev === "meta")) BASE = e.t;
+  e.t = BASE === null ? 0 : Math.max(0, e.t - BASE);
+  return e;
+}
+let ALL = [];            // replay: every event; live: events received so far
+let replayIdx = 0, replayT = 0, playing = true, speed = 1;
+function resetState() { S = fresh(); replayIdx = 0; }
+function seek(t) {
+  resetState();
+  while (replayIdx < ALL.length && ALL[replayIdx].t <= t) apply(ALL[replayIdx++]);
+  S.packets = []; replayT = t;
+}
+
+// -------------------------------------------------------------- render
+const fmtMB = b => (b / 1048576).toFixed(1);
+function render() {
+  const pct = S.nchunks ? S.progress / S.nchunks : 0;
+  $("prog").style.width = (100 * pct).toFixed(1) + "%";
+  $("progTxt").textContent = S.nchunks
+    ? `${S.progress} of ${S.nchunks} chunks verified by the receiver (${(100*pct).toFixed(1)}%), last checkpoint at chunk ${S.ck < 0 ? "none" : S.ck}`
+    : "";
+  const pill = $("pill");
+  let label = "idle", cls = "";
+  if (S.done) { label = "complete and verified"; cls = "done"; }
+  else if (S.failed) { label = "gave up"; cls = "down"; }
+  else if (S.link === "BLOCKED") { label = "beam blocked"; cls = "blocked"; }
+  else if (S.link === "DOWN") { label = "link down, reconnecting"; cls = "down"; }
+  else if (S.nchunks) { label = "transferring"; cls = "up"; }
+  pill.textContent = label; pill.className = "pill " + cls;
+  if (S.name) $("fileinfo").textContent = `${S.name}${S.size ? "  ·  " + (S.size / 1048576).toFixed(1) + " MB" : ""}`;
+  const p = S.profile;
+  $("subtitle").textContent = S.nchunks
+    ? `${S.kem || "?"} key exchange · AES-256-GCM chunks · ${p ? p.profile + " link at " + p.rate_mbps + " Mb/s" : "direct link"}`
+    : "waiting for the transfer to start";
+
+  const st = [
+    ["Outages", S.outages], ["Bookmarks saved", S.ckpts], ["Resumes", S.resumes],
+    ["Key exchanges", S.handshakes], ["Chunks sent again", S.resent], ["Rejected as tampered", S.tagRejects]
+  ];
+  $("stats").innerHTML = st.map(([k, v]) => `<div class="stat"><span>${k}</span><b>${v}</b></div>`).join("");
+
+  const note = $("beamNote");
+  note.textContent = S.done ? "Transfer finished. Receiver recomputed the SHA-256 of the whole file and it matches."
+    : S.link === "BLOCKED" ? "Signal blocked. Chunks sent now are lost, and neither side knows yet."
+    : S.link === "DOWN" ? "Connection reset. Waiting for the link, then the sender asks the receiver for its signed bookmark."
+    : S.nchunks ? "Link up. Chunks are encrypted, numbered and flowing." : "";
+
+  $("kex").innerHTML = S.kex.kem ? [
+    ["method", S.kex.kem + (S.kex.impl ? " (" + S.kex.impl + ")" : "")],
+    ["public key", (S.kex.pk || "?") + " bytes, sent in the clear"],
+    ["ciphertext", S.kex.ct + " bytes, sent in the clear"],
+    ["secret on the wire", "never (both sides derive it)"],
+    ["key fingerprint", S.kex.key_fp], ["session id", S.kex.sid]
+  ].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("") : "<dt>waiting</dt><dd>-</dd>";
+  const w = S.wire;
+  $("wire").innerHTML = w ? [
+    ["chunk", w.i + (w.resend ? " (sent again)" : "")], ["nonce", w.nonce],
+    ["ciphertext starts", w.ct8 + "…"], ["tag", w.tag + "…"],
+    ["same bytes as first time", w.same_ct == null ? "first send" : w.same_ct ? "yes, identical" : "NO"]
+  ].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("") : (S.lastOk ? [
+    ["chunk verified", S.lastOk.i], ["size", S.lastOk.n + " bytes"], ["hash chain now", S.lastOk.h + "…"],
+    ["tag check", "passed"]
+  ].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("") : "<dt>waiting</dt><dd>-</dd>");
+  const c = S.lastCkpt;
+  $("ckpt").innerHTML = c ? [
+    ["saved up to chunk", c.i_star], ["byte offset", c.o_star.toLocaleString()],
+    ["hash chain", c.h + "…"], ["signature (HMAC)", c.mac + "…"],
+    ["time to save", c.t_ck_ms + " ms (data flush " + c.t_data_ms + " ms)"], ["size", "84 bytes"]
+  ].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("") : "<dt>none yet</dt><dd>-</dd>";
+
+  const L = $("log"), atBottom = L.scrollTop + L.clientHeight >= L.scrollHeight - 30;
+  L.innerHTML = S.log.map(l => `<div class="${l.kind}"><span class="t">${l.t.toFixed(2)}s</span><span class="m">${l.msg}</span></div>`).join("");
+  if (atBottom) L.scrollTop = L.scrollHeight;
+}
+
+// ---- canvases
+function fit(cv, h) {
+  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth;
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return [g, w, h];
+}
+function drawBeam() {
+  const cv = $("beam"), [g, W, H] = fit(cv, 120);
+  g.clearRect(0, 0, W, H);
+  const x0 = 78, x1 = W - 78, y = 56;
+  const col = S.link === "UP" ? css("--up") : S.link === "BLOCKED" ? css("--blocked") : css("--down");
+  g.lineWidth = 3; g.strokeStyle = col; g.lineCap = "round";
+  if (S.link === "UP") { g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke(); }
+  else if (S.link === "BLOCKED") {
+    g.setLineDash([10, 8]); g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke(); g.setLineDash([]);
+    const mx = (x0 + x1) / 2; g.fillStyle = col; g.fillRect(mx - 5, y - 26, 10, 52);
+  } else {
+    g.beginPath(); g.moveTo(x0, y); g.lineTo(x0 + (x1 - x0) * 0.4, y); g.moveTo(x0 + (x1 - x0) * 0.6, y); g.lineTo(x1, y); g.stroke();
+    g.font = "600 13px " + getComputedStyle(document.body).fontFamily; g.fillStyle = col; g.textAlign = "center";
+    g.fillText("no connection", (x0 + x1) / 2, y - 12);
+  }
+  const travel = 0.45;
+  for (const p of S.packets) {
+    const a = (S.beamClock - p.born) / travel; if (a < 0 || a > 1) continue;
+    const x = x0 + (x1 - x0) * a;
+    g.fillStyle = p.resend ? css("--redo") : css("--flight"); g.fillRect(x - 5, y - 5, 10, 10);
+  }
+  g.fillStyle = css("--ink"); g.font = "600 13px " + getComputedStyle(document.body).fontFamily; g.textAlign = "center";
+  for (const [x, label, sub] of [[x0 - 38, "Laptop", "sender"], [x1 + 38, "Phone", "receiver"]]) {
+    g.fillStyle = css("--panel"); g.strokeStyle = css("--ink3"); g.lineWidth = 2;
+    g.beginPath(); g.rect(x - 30, y - 26, 60, 52); g.fill(); g.stroke();
+    g.fillStyle = css("--ink"); g.fillText(label, x, y + 4);
+    g.fillStyle = css("--ink3"); g.font = "12px " + getComputedStyle(document.body).fontFamily; g.fillText(sub, x, y + 42);
+    g.font = "600 13px " + getComputedStyle(document.body).fontFamily;
+  }
+}
+function drawGrid() {
+  const cv = $("grid"), n = S.nchunks || 0;
+  const W = cv.clientWidth; const cell = n > 800 ? 9 : n > 300 ? 12 : 16; const gap = 2;
+  const cols = Math.max(1, Math.floor((W + gap) / (cell + gap))), rows = Math.max(1, Math.ceil(n / cols));
+  const [g] = fit(cv, rows * (cell + gap)); g.clearRect(0, 0, W, rows * (cell + gap));
+  const pal = [css("--pending"), css("--flight"), css("--recv"), css("--ckpt"), css("--redo")];
+  for (let i = 0; i < n; i++) {
+    g.fillStyle = pal[S.cs[i]];
+    g.fillRect((i % cols) * (cell + gap), Math.floor(i / cols) * (cell + gap), cell, cell);
+  }
+}
+let chartGeom = null;
+function drawChart() {
+  const cv = $("chart");
+  if (cv.offsetParent === null) return;
+  const [g, W, H] = fit(cv, Math.max(160, cv.clientHeight));
+  g.clearRect(0, 0, W, H);
+  const padL = 44, padR = 12, top = 10, gapY = 24, h2 = Math.max(40, Math.min(120, Math.round(H * 0.22)));
+  const h1 = Math.max(60, H - top - gapY - h2 - 24), bottom = top + h1 + gapY + h2;
+  const tmax = Math.max(S.lastT, 1) * 1.02, X = t => padL + (W - padL - padR) * t / tmax;
+  const f = getComputedStyle(document.body).fontFamily;
+  chartGeom = { padL, padR, tmax, W, top, h1, h2, gapY };
+  // outage bands
+  for (const b of S.bands) {
+    const t1 = b.t1 == null ? S.lastT : b.t1;
+    g.fillStyle = css("--blocked"); g.globalAlpha = 0.16; g.fillRect(X(b.t0), top, Math.max(2, X(t1) - X(b.t0)), bottom - top); g.globalAlpha = 1;
+  }
+  // progress axis
+  g.strokeStyle = css("--rule"); g.fillStyle = css("--ink3"); g.font = "11.5px " + f; g.lineWidth = 1; g.textAlign = "right";
+  for (const v of [0, 25, 50, 75, 100]) { const y = top + h1 * (1 - v / 100); g.beginPath(); g.moveTo(padL, y); g.lineTo(W - padR, y); g.stroke(); g.fillText(v + "%", padL - 6, y + 4); }
+  const N = Math.max(1, S.nchunks);
+  g.strokeStyle = css("--recv"); g.lineWidth = 2; g.lineJoin = "round"; g.beginPath();
+  let started = false, prev = null;
+  for (const [t, p] of S.series) {
+    const x = X(t), y = top + h1 * (1 - p / N);
+    if (!started) { g.moveTo(x, y); started = true; }
+    else { g.lineTo(x, top + h1 * (1 - prev / N)); g.lineTo(x, y); }   // step shape keeps drops vertical
+    prev = p;
+  }
+  if (started) { g.lineTo(X(Math.max(S.lastT, 0)), top + h1 * (1 - prev / N)); }
+  g.stroke();
+  for (const [t, p] of S.ckMarks) { g.fillStyle = css("--ckpt"); g.fillRect(X(t) - 2, top + h1 * (1 - p / N) - 2, 4, 4); }
+  for (const [t, p] of S.resMarks) {
+    g.fillStyle = css("--redo"); const x = X(t), y = top + h1 * (1 - p / N);
+    g.beginPath(); g.arc(x, y, 5, 0, 7); g.fill();
+    g.strokeStyle = css("--panel"); g.lineWidth = 2; g.stroke();
+  }
+  // throughput
+  const y0 = top + h1 + gapY, peak = Math.max(1, ...S.tp.map(d => d[1])) * 8 / 0.1 / 1e6;
+  g.fillStyle = css("--ink3"); g.font = "11.5px " + f; g.textAlign = "right";
+  g.fillText(Math.round(peak) + "", padL - 6, y0 + 10); g.fillText("0", padL - 6, y0 + h2);
+  g.fillText("Mb/s", padL - 6, y0 + h2 / 2 + 4);
+  g.strokeStyle = css("--rule"); g.beginPath(); g.moveTo(padL, y0 + h2); g.lineTo(W - padR, y0 + h2); g.stroke();
+  const bw = Math.max(1, (W - padL - padR) * 0.1 / tmax - 0.5);
+  g.fillStyle = css("--flight");
+  for (const [t, b] of S.tp) { const mb = b * 8 / 0.1 / 1e6, hh = h2 * mb / peak; g.fillRect(X(t - 0.1), y0 + h2 - hh, bw, hh); }
+  // time axis
+  g.fillStyle = css("--ink3"); g.textAlign = "center";
+  const step = tmax > 40 ? 10 : tmax > 15 ? 5 : tmax > 6 ? 2 : 1;
+  for (let t = 0; t <= tmax; t += step) g.fillText(t + "s", X(t), bottom + 14);
+  if (hover != null) {
+    const x = X(hover); g.strokeStyle = css("--ink3"); g.lineWidth = 1; g.beginPath(); g.moveTo(x, top); g.lineTo(x, bottom); g.stroke();
+  }
+}
+let hover = null;
+function chartMove(ev) {
+  if (!chartGeom) return;
+  const r = $("chart").getBoundingClientRect(), x = ev.clientX - r.left, { padL, padR, tmax, W } = chartGeom;
+  if (x < padL || x > W - padR) { hover = null; $("tip").style.display = "none"; return; }
+  hover = (x - padL) / (W - padL - padR) * tmax;
+  let prog = 0; for (const [t, p] of S.series) { if (t <= hover) prog = p; else break; }
+  let tp = 0; for (const [t, b] of S.tp) { if (t - 0.1 <= hover && hover < t) { tp = b * 8 / 0.1 / 1e6; break; } }
+  const inOut = S.bands.some(b => hover >= b.t0 && hover <= (b.t1 == null ? 1e9 : b.t1));
+  const tip = $("tip"); tip.style.display = "block"; tip.style.left = (ev.clientX + 12) + "px"; tip.style.top = (ev.clientY + 12) + "px";
+  tip.textContent = `${hover.toFixed(2)} s · ${S.nchunks ? (100 * prog / S.nchunks).toFixed(0) : 0}% verified · ${tp.toFixed(0)} Mb/s${inOut ? " · link outage" : ""}`;
+}
+$("chart").addEventListener("mousemove", chartMove);
+$("chart").addEventListener("mouseleave", () => { hover = null; $("tip").style.display = "none"; });
+
+function legends() {
+  const items = [["--pending", "not yet"], ["--flight", "sent, not yet confirmed"], ["--recv", "verified by receiver"],
+    ["--ckpt", "saved in a checkpoint"], ["--redo", "must be sent again"]];
+  $("legend").innerHTML = items.map(([c, t]) => `<span><i style="background:var(${c})"></i>${t}</span>`).join("");
+  $("legend2").innerHTML = `<span><i style="background:var(--recv)"></i>verified progress</span>
+    <span><i style="background:var(--ckpt)"></i>checkpoint saved</span><span><i style="background:var(--redo);border-radius:6px"></i>resume point</span>
+    <span><i style="background:var(--blocked);opacity:.4"></i>link outage</span><span><i style="background:var(--flight)"></i>link throughput (bottom)</span>`;
+}
+legends();
+
+// -------------------------------------------------------------- loop
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.1, (now - last) / 1000); last = now;
+  if (REPLAY && playing && ALL.length) {
+    replayT += dt * speed;
+    const endT = ALL[ALL.length - 1].t + 1.5;
+    if (replayT > endT) { replayT = endT; playing = false; $("play").textContent = "Replay"; }
+    while (replayIdx < ALL.length && ALL[replayIdx].t <= replayT) apply(ALL[replayIdx++]);
+    $("scrub").value = String(Math.round(1000 * replayT / endT));
+    $("clock").textContent = replayT.toFixed(1) + " s";
+    if (S.link === "UP") S.beamClock += dt * speed;
+  } else if (!REPLAY && S.link === "UP") S.beamClock += dt;
+  if (!REPLAY) {                                   // live: apply queued events
+    while (replayIdx < ALL.length) apply(ALL[replayIdx++]);
+  }
+  render(); drawBeam(); drawGrid(); drawChart();
+  requestAnimationFrame(frame);
+}
+
+if (REPLAY) {
+  ALL = window.__EVENTS__.map(e => Object.assign({}, e)).map(norm);
+  $("replayCtl").hidden = false;
+  $("play").onclick = () => {
+    if (!playing && replayT >= ALL[ALL.length - 1].t + 1.4) seek(0);
+    playing = !playing; $("play").textContent = playing ? "Pause" : "Play";
+  };
+  $("speed").onclick = () => { speed = speed === 1 ? 2 : speed === 2 ? 4 : speed === 4 ? 8 : 1; $("speed").textContent = speed + "×"; };
+  $("scrub").oninput = e => { seek(ALL[ALL.length - 1].t * 1.0 * (e.target.value / 1000)); };
+  $("play").textContent = "Pause";
+} else {
+  let RUN = null;
+  const es = new EventSource("events");
+  es.onmessage = m => {
+    const e = JSON.parse(m.data);
+    if (e.ev === "run_start") { if (RUN !== null && RUN !== e.run) { location.reload(); return; } RUN = e.run; }
+    ALL.push(norm(e));
+  };
+  fetch("api/caps").then(r => r.json()).then(c => {
+    if (c.cut || c.tamper) $("liveCtl").hidden = false;
+    $("btnCut").hidden = !c.cut; $("btnTamper").hidden = !c.tamper;
+  }).catch(() => {});
+  $("btnCut").onclick = () => fetch("api/cut", { method: "POST" });
+  const qSeen = {};
+  let qShown = false;
+  function renderQuantum(jobs) {
+    if (!jobs.length) return;
+    $("qempty").hidden = true;
+    if (!qShown) { qShown = true; showTab("q"); }
+    const box = $("qjobs");
+    jobs.forEach((j, i) => {
+      let el = $("qj" + i);
+      if (!el) {
+        el = document.createElement("div"); el.className = "qjob"; el.id = "qj" + i;
+        el.innerHTML = `<h3></h3><div class="qrow"><div><div class="tiny">What the eavesdropper recorded from the beam (first 63,000 bytes, one grey pixel per byte)</div><canvas width="420" height="150"></canvas></div><div><div class="tiny">The simulated quantum computer</div><div class="qlog"></div></div></div><div class="qout"></div>`;
+        box.appendChild(el);
+      }
+      el.querySelector("h3").textContent = j.title;
+      const log = el.querySelector(".qlog"), sig = j.lines.length + ":" + j.running;
+      if (qSeen[i] !== sig) { qSeen[i] = sig; log.textContent = j.lines.join("\n") + (j.running ? "\n..." : ""); log.scrollTop = log.scrollHeight; }
+      if (j.has_noise && !el.dataset.noise) {
+        el.dataset.noise = "1";
+        fetch("api/quantum/noise?job=" + i).then(r => r.arrayBuffer()).then(buf => {
+          const c = el.querySelector("canvas"), x = c.getContext("2d"), d = x.createImageData(420, 150), u = new Uint8Array(buf);
+          for (let k = 0; k < 420 * 150; k++) { const v = u[k] || 0; d.data[4*k] = d.data[4*k+1] = d.data[4*k+2] = v; d.data[4*k+3] = 255; }
+          x.putImageData(d, 0, 0);
+        });
+      }
+      if (!j.running && j.result && !el.dataset.out) {
+        el.dataset.out = "1";
+        const r = j.result, out = el.querySelector(".qout");
+        if (r.success) {
+          out.innerHTML = `<div class="qres bad">The attacker recovered the file${r.identical_to_original ? " (identical to the original)" : ""}: ${r.chunks_decrypted} of ${r.chunks_total} chunks decrypted.</div>`
+            + (j.has_image ? `<div class="tiny">What the attacker got:</div><img class="qimg" alt="The file as recovered by the attacker" src="api/quantum/image?job=${i}&t=${Date.now()}">` : "");
+        } else {
+          out.innerHTML = `<div class="qres good">The attack failed. The recording stays encrypted (${(r.guesses || 0).toLocaleString()} random keys tried, none worked).</div>`;
+        }
+      }
+    });
+  }
+  const pollGuide = () => fetch("api/guide").then(r => r.json()).then(g => {
+    if (!g.steps || !g.steps.length) return;
+    $("guide").hidden = false;
+    $("gsteps").innerHTML = g.steps.map((t, i) =>
+      `<li class="${i < g.done ? "done" : i === g.current ? "cur" : ""}">${t}</li>`).join("");
+    $("gtext").textContent = g.text;
+    const b = $("gnext");
+    b.hidden = g.current < 0; b.textContent = g.button; b.className = "primary" + (g.danger ? " danger" : "");
+    $("gall").hidden = g.transfer_finished || g.auto;
+    renderQuantum(g.quantum || []);
+  }).catch(() => {});
+  setInterval(pollGuide, 300); pollGuide();
+  $("gnext").onclick = () => fetch("api/guide/next", { method: "POST" }).then(pollGuide);
+  $("gall").onclick = () => fetch("api/guide/all", { method: "POST" }).then(pollGuide);
+  $("btnTamper").onclick = () => fetch("api/tamper", { method: "POST" });
+}
+requestAnimationFrame(frame);
+
+// ---------------------------------------------------------------- tabs, file chooser (live mode only)
+function showTab(w) {
+  $("tab-time").setAttribute("aria-selected", w === "time"); $("tab-q").setAttribute("aria-selected", w === "q");
+  $("pane-time").hidden = w !== "time"; $("pane-q").hidden = w !== "q";
+}
+$("tab-time").onclick = () => showTab("time");
+$("tab-q").onclick = () => showTab("q");
+if (!REPLAY) {
+  const pick = $("picker"), cols = $("cols");
+  const say = t => { $("pickmsg").textContent = t; };
+  const enter = info => {
+    const has = !!(info && info.file);
+    pick.hidden = has || !info.studio; cols.hidden = !has && info.studio;
+    $("btnNew").hidden = !(info && info.studio && has);
+    if (has) $("fileinfo").textContent = `${info.file}  ·  ${(info.size / 1048576).toFixed(1)} MB`;
+  };
+  fetch("api/run").then(r => r.json()).then(info => { info.studio = info.studio !== false; enter(info); }).catch(() => {});
+  async function upload(f) {
+    say(`Sending ${f.name} (${(f.size / 1048576).toFixed(1)} MB) to the sender...`);
+    try {
+      const r = await fetch("api/upload?name=" + encodeURIComponent(f.name), { method: "POST", body: f });
+      if (!r.ok) throw new Error("server said " + r.status);
+      location.reload();
+    } catch (e) { say("Could not load that file: " + e.message); }
+  }
+  $("btnPick").onclick = () => $("fileInput").click();
+  $("fileInput").onchange = e => { if (e.target.files[0]) upload(e.target.files[0]); };
+  $("btnSample").onclick = async () => { say("Creating a 20 MB sample file..."); await fetch("api/sample", { method: "POST" }); location.reload(); };
+  const drop = $("drop");
+  ["dragenter", "dragover"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) upload(f); });
+  $("btnNew").onclick = () => fetch("api/reset", { method: "POST" }).then(() => location.reload());
+}
+})();
+</script>
+</body>
+</html>

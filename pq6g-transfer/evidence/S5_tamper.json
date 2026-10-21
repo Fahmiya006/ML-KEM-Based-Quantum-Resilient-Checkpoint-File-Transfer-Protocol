@@ -1,0 +1,30 @@
+{
+ "id": "S5_tamper",
+ "size_mb": 30,
+ "link": "6g-demo",
+ "seed": 1,
+ "n": 32,
+ "mode": "checkpoint",
+ "sender_ok": true,
+ "file_identical": true,
+ "wall_s": 1.583,
+ "receiver_completion_s": 1.491,
+ "key_exchanges": 1,
+ "resumes": 0,
+ "rewinds": 0,
+ "chunks_sent": 512,
+ "chunks_resent": 32,
+ "chunks_in_file": 480,
+ "outages": 0,
+ "outage_seconds": 0.0,
+ "checkpoints": 14,
+ "t_ck_ms_mean": 4.429,
+ "t_ck_ms_median": 4.288,
+ "resume_served": [],
+ "resume_rejected": [],
+ "tag_rejects": 1,
+ "attacks": [
+  "attack_tamper"
+ ],
+ "bytes_resent_mb": 2.0
+}
