@@ -58,7 +58,7 @@ To open the dashboard on a phone, use the `/phone` address printed in the termin
 
 If `python3 -m pq6g` says "No module named pq6g", you are not in the folder that contains `pq6g/`. The single file `pq6g.pyz` also works from anywhere: `python3 pq6g.pyz demo`.
 
-## Laptop to phone (Android with Termux, not tested here)
+## Laptop to phone (if Termux is available)
 
 On the phone:
 ```bash
